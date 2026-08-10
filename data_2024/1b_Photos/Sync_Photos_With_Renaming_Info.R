@@ -18,7 +18,7 @@ health_assess_2024 <- health_assess_2024 %>% mutate(last_photo = as.integer(last
 health_assess_2024 <- health_assess_2024 %>% mutate(camera = as.character(camera))
 
 # --------Get photo info--------
-photo_2024 <- read.csv("data_2024/0_Photos/2024_Photo_Information.csv")
+photo_2024 <- read.csv("source_data/2024_Photo_Information.csv")
 photo_2024 <- photo_2024 %>% rename(date = Date)
 
 # --------Save photo info in all data--------
