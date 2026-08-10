@@ -19,7 +19,7 @@ source("data_2024/1_Data_Processing/Typing.R")
 # 1b. Photos
 source("data_2024/0_Photos/Sync_Photos_With_Renaming_Info.R") 
 
-health_assess_2024 <- health_assess_2024 %>% select(site, site_owner, date, plant_number, plant_initials, first_photo, last_photo, camera, everything())
+health_assess_2024 <- health_assess_2024 %>% select(site, site_owner, date, plant_number, plant_initials, first_photo, last_photo, camera, seedling_y_n, everything())
 
 # Write to CSV
 write.csv(health_assess_2024, "cleaned_2024_Health_Assessments.csv", row.names = FALSE)
