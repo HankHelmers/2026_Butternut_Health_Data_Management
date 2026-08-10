@@ -5,5 +5,3 @@ health_assess_2024 <- health_assess_2024 %>% mutate(plant_initials = "SH")
 
 health_assess_2024 <- health_assess_2024 %>% mutate(plant_number =as.numeric(str_extract(plant_number, "\\d+$")))
 
-# Re-order columns 
-health_assess_2024 <- health_assess_2024 %>% select(site, site_owner, date, plant_number, plant_initials, first_photo, last_photo, camera, everything())

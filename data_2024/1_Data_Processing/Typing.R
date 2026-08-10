@@ -1,3 +1,7 @@
+
+
+
+# As numbers 
 health_assess_2024$plant_height_ft <- as.numeric(health_assess_2024$plant_height_ft)
 health_assess_2024$dbh_cm <- as.numeric(health_assess_2024$dbh_cm)
 health_assess_2024$percent_live_canopy <- as.numeric(health_assess_2024$percent_live_canopy)
