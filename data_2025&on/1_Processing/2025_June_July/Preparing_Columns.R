@@ -4,14 +4,6 @@
 #          This preparation mainly includes renaming and removal.
 
 
-# Imports essential packages
-library(tidyverse) # Clarity in code writing
-library(readr)
-library(styler)
-library(dplyr)     # Data selecting and filtering
-library(lubridate) # For working with dates and times
-
-
 # Remove columns created for the August and onward version
 june_health_assess <- june_health_assess %>% select(1:60)
 
