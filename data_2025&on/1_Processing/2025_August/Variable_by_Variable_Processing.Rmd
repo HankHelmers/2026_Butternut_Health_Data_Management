@@ -9,7 +9,6 @@ original <- after_health_assess
 ```
 
 ## Site names
-
 Correct capitalization inconsistencies with CPVT and Sugar River.
 
 ```{r}
