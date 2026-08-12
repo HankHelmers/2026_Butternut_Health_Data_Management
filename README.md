@@ -11,7 +11,7 @@ The health assessments [evolved considerably](https://docs.google.com/document/d
 Here, we document the data processing, merging, quality control, and cleaning conducted to account for the form's evolution. The following R Scripts produce two homogenized datasets for data collected from 2024 onward and a separate one for 2025 onward.
 
 <img width="3700" height="1721" alt="2026_Flowchart_Butternut_Health_Data_Management" src="https://github.com/user-attachments/assets/79aec1aa-b3f7-4d23-8ebe-71de219bcd44" />
-Figure 1. Pipeline of data management steps taken to prepare the butternut health assessment data from 2024 to 2026. 
+Figure 1. (Click to enlarge for text) Flowchart of data management steps taken to prepare the butternut health assessment data from 2024 to 2026. 
 
 ## Folder Descriptions
 **data_2024**: Parent folder for data management of the final combined 2024 and onward dataset. Includes processing and integration of separate photo data, merging with 2025 and more.  
