@@ -110,8 +110,8 @@ after_health_assess <- after_health_assess %>% rename(a_d_base_canker_area = "A:
 after_health_assess <- after_health_assess %>% rename(a_d_9_feet_canker_area = "A:  If the first main live branch is above 9 feet: How much of the surface area of the bottom 9 ft of the trunk (starting above the root flare) is infected by canker, measured as a percentage?...22")
 
 after_health_assess <- after_health_assess %>% rename(a_d_trunk_canker_area = "A: How much of the surface area of the trunk between the first live main branch and the root flare is infected by canker, measured as a percentage?...23")
-                                                       
-after_health_assess <- after_health_assess %>% rename(a_d_girdled_circum_canker = "A: At the part of the trunk that appears most girdled by canker, what portion of the circumference of the trunk is girdled?...24")                                                                                                                                                                                                                                           
+
+after_health_assess <- after_health_assess %>% rename(a_d_circum_girdled = "A: At the part of the trunk that appears most girdled by canker, what portion of the circumference of the trunk is girdled?...24")                                                                                                                                                                                                                                           
 # Alive Adults
 
 after_health_assess <- after_health_assess %>% rename(a_a_producing_seed = "A: Producing seed?")
@@ -141,16 +141,15 @@ after_health_assess <- after_health_assess %>% rename(s_germ_year_estimate = "S:
 
 # Alive/dead seedling questions
 after_health_assess <- after_health_assess %>% rename(s_dead_or_alive = "S: Is this seedlings dead or alive?")                                                                 
-after_health_assess <- after_health_assess %>% rename(s_d_visible_cankers = "S: Are there visible cankers?...46")                                                                                      
+after_health_assess <- after_health_assess %>% rename(s_d_visible_canker = "S: Are there visible cankers?...46")                                                                                      
 after_health_assess <- after_health_assess %>% rename(s_a_percent_live_canopy = "S: Percent live canopy (for seedlings, estimate using portion of present healthy leaves)")                                                                                                   
-after_health_assess <- after_health_assess %>% rename(s_a_visible_cankers = "S: Are there visible cankers?...48")                                                                                                                                                         
+after_health_assess <- after_health_assess %>% rename(s_a_visible_canker = "S: Are there visible cankers?...48")                                                                                                                                                         
 after_health_assess <- after_health_assess %>% rename(s_a_visible_callous = "S: Do any cankers show signs of callousing?")                                                                                                                                                
 after_health_assess <- after_health_assess %>% rename(s_base_canker_area = "S: How much of the base of the stem (up to 2 inches above soil) is infected by canker, e.g. as a percentage of base of the stem with cankers visible?")                                      
 after_health_assess <- after_health_assess %>% rename(s_stem_canker_area = "S: How much of the surface area of the stem (excluding the bottom 2 inches) of the trunk is infected by canker, measured as a percentage?")                                                  
 after_health_assess <- after_health_assess %>% rename(s_circum_girdled = "S: At the part of the stem that appears most girdled by canker, what portion of the circumference of the stem is girdled?")                                                                 
 
 # -----------------
-
 
 # Print out renaming
 colnames(after_health_assess)

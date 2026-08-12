@@ -6,7 +6,7 @@
 
 # Eventually, I'd like to parse this as a number, but currently it would lose
 # some information since there is the "Yes ..." option.
-#june_health_assess$slope <- parse_number(june_health_assess$slope)
+# june_health_assess$slope <- parse_number(june_health_assess$slope)
 
 
 ## GPS

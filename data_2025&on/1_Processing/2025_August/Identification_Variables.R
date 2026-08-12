@@ -17,7 +17,6 @@ after_health_assess <- after_health_assess %>% mutate(plant_initials = case_when
   TRUE ~ plant_initials
 ))
 
-
 # Numeric NA renamings
 ## GPS
 # Presence of several different ways of saying an NA. Here I clarify them all to actual NA values.

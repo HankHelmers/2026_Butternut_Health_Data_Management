@@ -23,4 +23,10 @@ june_health_assess <- june_health_assess %>% mutate(
   last_photo = last_photo.y, # as.integer(last_photo.x)),
 ) %>% select(-camera.x, -camera.y, -first_photo.x, -first_photo.y, -last_photo.x, -last_photo.y)
 
+# All sugar river ones are from SandrasPhone
+june_health_assess <- june_health_assess %>% mutate(
+  camera = case_when(site_name == "Sugar River" ~ "SandrasPhone",
+                     TRUE ~ camera)
+)
+
 rm(june_july_photos)

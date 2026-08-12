@@ -1,0 +1,181 @@
+---
+title: "2025_August_Unique_Type_Conversion"
+always_allow_html: true
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+knit: >
+  (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile, 
+      encoding = encoding, 
+      output_file = "2025_June_July_Unique_Type_Conversion.html",
+      output_dir = "C:/Users/helmerhj/Documents/GitHub/2026_Butternut_Health_Data_Management/communication/rpub"
+    )
+  })
+---
+
+## Y/N to Yes/No
+Consistent formating of boolean values to be "Yes" and "No"
+
+### Epicormics 
+```{r}
+cleaning <- after_health_assess %>%
+  mutate(
+    # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
+    a_base_epicormics = if_else(a_base_epicormics == "Y", "Yes", a_base_epicormics),
+    a_base_epicormics = if_else(a_base_epicormics == "N", "No", a_base_epicormics),
+    a_trunk_epicormics = if_else(a_trunk_epicormics == "Y", "Yes", a_trunk_epicormics),
+    a_trunk_epicormics = if_else(a_trunk_epicormics == "N", "No", a_trunk_epicormics)
+  )
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  original_base_ep = after_health_assess$a_base_epicormics,
+  clean_base_ep  = cleaning$a_base_epicormics,
+  
+  original_trunk_ep = after_health_assess$a_trunk_epicormics,
+  clean_trunk_ep    = cleaning$a_trunk_epicormics,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+```
+
+### Visible canker (adult & seedling)
+```{r}
+cleaning <- after_health_assess %>%
+  mutate(
+    # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
+    a_visible_canker = if_else(a_visible_canker == "Y", "Yes", a_visible_canker),
+    a_visible_canker = if_else(a_visible_canker == "N", "No", a_visible_canker),
+    s_visible_canker = if_else(s_visible_canker == "Y", "Yes", s_visible_canker),
+    s_visible_canker = if_else(s_visible_canker == "N", "No", s_visible_canker)
+  )
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  original_a_vis_canker = after_health_assess$a_visible_canker,
+  clean_a_vis_canker  = cleaning$a_visible_canker,
+  
+  original_s_vis_canker = after_health_assess$s_visible_canker,
+  clean_s_vis_canker    = cleaning$s_visible_canker,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+```
+
+
+### Visible callous 
+```{r}
+cleaning <- after_health_assess %>%
+  mutate(
+    # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
+    a_a_visible_callous = if_else(a_a_visible_callous == "Y", "Yes", a_a_visible_callous),
+    a_a_visible_callous = if_else(a_a_visible_callous == "N", "No", a_a_visible_callous),
+    s_a_visible_callous = if_else(s_a_visible_callous == "Y", "Yes", s_a_visible_callous),
+    s_a_visible_callous = if_else(s_a_visible_callous == "N", "No", s_a_visible_callous)
+  )
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  original_a_vis_callous = after_health_assess$a_a_visible_callous,
+  clean_a_vis_callous  = cleaning$a_a_visible_callous,
+  
+  original_s_vis_canker = after_health_assess$s_a_visible_callous,
+  clean_s_vis_callous   = cleaning$s_a_visible_callous,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+```
+
+
+## Canker areas: Adding 0s for those without canker
+If 'visible_canker' is NO then canker percentages (base/trunk/girdled) are 0.
+
+# Alive, adults
+```{r}
+cleaning <- after_health_assess %>% mutate(a_base_canker_area = if_else(a_visible_canker == "No", 0, a_base_canker_area))
+
+cleaning <- after_health_assess %>% mutate(a_9_feet_canker_area = if_else(a_visible_canker == "No", 0, a_9_feet_canker_area))
+
+cleaning <- after_health_assess %>% mutate(a_trunk_canker_area = if_else(a_visible_canker == "No", 0, a_trunk_canker_area))
+
+cleaning <- after_health_assess %>% mutate(a_circum_girdled = if_else(a_visible_canker == "No", 0, a_circum_girdled))
+
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  original_a_visible_canker = after_health_assess$a_visible_canker,
+  original_a_base_canker = after_health_assess$a_base_canker_area,
+  clean_a_base_canker  = cleaning$a_base_canker_area,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+```
+
+
+# Dead, adults
+after_health_assess <- after_health_assess %>% mutate(a_d_base_canker_area = if_else(a_d_visible_callous == "No", 0, a_a_base_canker_area))
+after_health_assess <- after_health_assess %>% mutate(a_d_9_feet_canker_area = if_else(a_d_visible_callous == "No", 0, a_a_9_feet_canker_area))
+after_health_assess <- after_health_assess %>% mutate(a_d_trunk_canker_area = if_else(a_d_visible_callous == "No", 0, a_a_trunk_canker_area))
+after_health_assess <- after_health_assess %>% mutate(a_d_circum_girdled = if_else(a_d_visible_callous == "No", 0, a_a_circum_girdled))
+
+after_health_assess <- after_health_assess %>% mutate(s_base_canker_area = if_else(s_a_visible_callous == "No", 0, s_base_canker_area))
+after_health_assess <- after_health_assess %>% mutate(s_stem_canker_area = if_else(s_a_visible_callous == "No", 0, s_trunk_canker_area))
+after_health_assess <- after_health_assess %>% mutate(s_circum_girdled = if_else(s_a_visible_callous == "No", 0, s_circum_girdled))
