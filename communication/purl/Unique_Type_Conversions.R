@@ -270,37 +270,3 @@ datatable(
 # Applying the changes
 june_health_assess <- june_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 
-
-## --------------------------------------------------------
-# Add column to see what as.numeric does to the values 
-cleaning <- june_health_assess %>% mutate(seed_estimate_numeric = parse_number(seed_estimate)) %>% select(timestamp, site_name, plant_number, seed_estimate, seed_estimate_numeric)
-
-# Change to "Few (<50)" or "Lots (>50)"
-cleaning <- cleaning %>% mutate(
-  cleaned_seed_est = case_when(
-    str_detect(tolower(seed_estimate), "unable") ~ NA,
-    str_detect(tolower(seed_estimate), "unsure") ~ NA,
-    parse_number(seed_estimate) <= 50 ~ "Few (<50)",
-    parse_number(seed_estimate) > 50 ~ "Lots (>50)",
-    tolower(seed_estimate) == "few" ~ "Few (<50)",
-    tolower(seed_estimate) == "hundreds" ~ "Lots (>50)",
-  )
-)
-
-# Table of before and after for verification
-datatable(
-  cleaning %>% select(-timestamp, -seed_estimate_numeric),
-  options = list(
-    pageLength = 10,
-    scrollY = "400px",
-    scrollX = TRUE
-  ),
-  class = "stripe hover row-border order-column" # forces light theme
-)
-
-# Applying the changes
-cleaning <- cleaning %>% mutate(seed_estimate = cleaned_seed_est) %>% select(-seed_estimate_numeric, -cleaned_seed_est) 
-june_health_assess <- june_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
-cleaning <- june_health_assess # reset for testing
-
-
