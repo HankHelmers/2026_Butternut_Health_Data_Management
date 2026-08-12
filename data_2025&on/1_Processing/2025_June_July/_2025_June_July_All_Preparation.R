@@ -26,9 +26,9 @@ source("communication/purl/Unique_Type_Conversions.R")
 purl(input=paste0(june_processing_path,"Categorical_Renamings.Rmd"), output="communication/purl/Categorical_Renamings.R")
 source("communication/purl/Categorical_Renamings.R")
 
-# 1b. Photos
-source(paste0(june_processing_path,"../1b_Photos/", "Correct_Photo_Data.R"))
+source(paste0(june_processing_path, "Correct_Photo_Data.R"))
 
+# ---------------------------------
 # Re-order 
 june_health_assess <- june_health_assess %>%
   select(
