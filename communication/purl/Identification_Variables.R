@@ -1,0 +1,605 @@
+## ----echo=FALSE, message=FALSE, warning=FALSE------------
+library(tidyverse)
+library(readr)
+library(DT)
+library(dplyr)
+library(styler)
+library(lubridate) # For working with dates and times
+
+original <- june_health_assess
+
+# # Imports all June/July 2025 data
+# june_health_assess <- read_csv("../data/Raw_Datasets/2025_June_July_Butternut_Health_Assessment_Form_Responses.csv")
+# 
+# source("../data_cleaning/2025_June_July_1_Preparing_Columns.R", local=TRUE)
+# source("../data_cleaning/2025_June_July_2_Type_Conversions.R", local=TRUE)
+# source("../data_cleaning/2025_June_July_3_Removing_Test_Entries.R", local=TRUE)
+# source("../data_cleaning/2025_June_July_4_Processing_Dead_Adults.R", local=TRUE)
+# 
+# exists("june_health_assess")
+
+
+## --------------------------------------------------------
+# Site name is WCP for all trees up until July 1st
+last_wcp_time <- ymd_hms("2025-07-01 10:57:46")
+
+june_health_assess <- june_health_assess %>%
+  mutate(site_name = ifelse(timestamp < last_wcp_time, "WCP", site_name))
+
+# Correct capitalization inconsistencies with CPVT and Sugar River
+june_health_assess <- june_health_assess %>%
+  mutate(site_name = case_when(
+    site_name == "Cpvt" ~ "CPVT",
+    site_name == "Sugar river" ~ "SR",
+    site_name == "Sugar River" ~ "SR",
+    TRUE ~ site_name # Otherwise, keep name the same
+  ))
+
+
+
+## --------------------------------------------------------
+# Remove 'SH' or 'SH ' from the beginning of plant numbers 
+june_health_assess$plant_number <- sub("^SH\\s*", "", june_health_assess$plant_number)
+
+cleaning <- june_health_assess
+cleaning$plant_number <- parse_number(cleaning$plant_number)
+
+# Demonstrating changes
+comparison <- tibble(
+  original_plant_number = june_health_assess$plant_number,
+  clean_plant_number = cleaning$plant_number
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying changes
+june_health_assess <- june_health_assess %>% mutate(plant_number = as.integer(parse_number(plant_number)))
+
+
+## --------------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(adult_or_seedling = case_when(
+  adult_or_seedling == "Yes" ~ "Seedling",
+  adult_or_seedling == "No" ~ "Adult"
+))
+
+
+## --------------------------------------------------------
+june_6th = ymd_hms("2025-06-6 23:59:59") # "this is black walnut!"
+
+june_health_assess <- june_health_assess %>%
+  mutate(adult_or_seedling = if_else(
+    timestamp < june_6th,
+    # If TRUE (before June 6th), update labels by densiometer:
+    case_when(
+      is.na(densio_north) ~ "Adult",
+      TRUE ~ "Seedling" 
+    ),
+    # If FALSE (June 6th or later), keep whatever was already there
+    adult_or_seedling
+  ))
+
+
+
+## --------------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(plant_initials = case_when(
+  site_name == "WCP" ~ "SH",
+  site_name == "Sugar River" ~ "SR",
+  site_name == "ILM" ~ "BU",
+  site_name == "CPVT" ~ "BU",
+  TRUE ~ plant_initials
+))
+
+
+
+## --------------------------------------------------------
+# Eventually, I'd like to parse this as a number, but currently it would lose
+# some information since there is the "Yes ..." option.
+#june_health_assess$slope <- parse_number(june_health_assess$slope)
+
+
+## --------------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(
+  gps_north = case_when(
+    gps_north == 0 ~ NA,
+    gps_north == "Na" ~ NA,
+    gps_north == "N/A" ~ NA,
+    gps_north == "X" ~ NA,
+    TRUE ~ gps_north
+  ),
+  gps_west = case_when(
+    gps_west == 0 ~ NA,
+    gps_west == "Na" ~ NA,
+    gps_west == "N/A" ~ NA,
+    gps_west == "X" ~ NA,
+    TRUE ~ gps_west
+  )
+)
+
+
+
+## ----warning=FALSE---------------------------------------
+june_health_assess$gps_north <- as.double(june_health_assess$gps_north)
+june_health_assess$gps_west <- as.double(june_health_assess$gps_west)
+
+
+## ----warning=FALSE---------------------------------------
+# Note: Using 'parse_number' first is very important. Parse_number retrieves the number from
+#     within a string, removing excess characters, e.g. parse_number("70%") = 70.
+#
+#     Then, as.integer turns it into an integer, but if you used only as.integer
+#     any excess characters would lead to parsing the whole value as NA, e.g.
+#     as.integer("70%") = NA.
+
+# Trunk canker area
+june_health_assess$trunk_canker_area <- as.integer(parse_number(june_health_assess$trunk_canker_area))
+
+# Circumference girdled
+june_health_assess$circum_girdled_canker <- as.integer(parse_number(june_health_assess$circum_girdled_canker))
+
+# Base canker area
+june_health_assess$base_canker_area <- as.integer(parse_number(june_health_assess$base_canker_area))
+
+
+## --------------------------------------------------------
+comparison <- tibble(
+  site_name = original$site_name, 
+  plant_number = original$plant_number,
+  original_base_canker = original$base_canker_area,
+  clean_base_canker = june_health_assess$base_canker_area
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+
+## ----cleaning_height_2, message=FALSE, warning=FALSE-----
+cleaning <- june_health_assess %>% select(timestamp, site_name, plant_number, plant_height_ft) %>% mutate(
+  # Big picture height cleaning:
+  #   * Assume in feet if no units are written into the box
+  #   * If units are written in the box: extract them and re-calculate the heigh
+
+  # ------------------ Process:
+  # Clean up the text for consistency (e.g., remove extra spaces, make lowercase)
+  height_str = str_to_lower(str_trim(plant_height_ft)),
+
+  # Extract the first decimal number, this will always be the feet
+    # Note that broadly "\\d+\\.?\\d*" selection nomenclature simily breaks down to: get the "Digits, maybe a dot, maybe more digits"
+    # Where the "\\d+" gets all the first whole digits,
+    # then the "\\.?" will check whether there is a literal decimal point,
+    # if there is then "\\d*" gets all remaining digits
+  feet_str = str_extract(height_str, "\\d+\\.?\\d*\\s*(ft)"),
+  feet = as.numeric(str_extract(feet_str, "\\d+\\.?\\d*")),
+
+  # Get the string of inches which will be based on either the presence of "inches" or "in",
+    # e.g., "7 inches" or "7in"
+  inches_str = str_extract(height_str, "\\d+\\.?\\d*\\s*(inches|in)"),
+  # Extract the decimal from the isolated inches string, like the feet
+  inches = as.numeric(str_extract(inches_str, "\\d+\\.?\\d*")),
+
+  # Convert using the numerical values
+    # Where 'coalesce' will use a 0 if feet/inches is an NA value
+  calculated_from_text_feet = (coalesce(feet, 0)) + (coalesce(inches, 0) / 12.0),
+
+  # Seeing if the entry has additional text in it like "ft" or "inches"
+  contains_text = str_detect(height_str, "ft") | str_detect(height_str, "inches") | str_detect(height_str, "in"),
+
+  # Assume the plant_height_ft is the string as a number if the entry doesn't have text.
+  plant_height_ft_cleaned = if_else(!contains_text, as.numeric(height_str), calculated_from_text_feet)
+
+) %>% select(timestamp, site_name, plant_number, plant_height_ft, plant_height_ft_cleaned)
+
+
+# Demonstrating changes
+comparison <- tibble(
+  site_name = cleaning$site_name, 
+  plant_number = cleaning$plant_number,
+  original_height_ft  = cleaning$plant_height_ft,
+  clean_height_ft = cleaning$plant_height_ft_cleaned
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying changes 
+cleaning <- cleaning %>% select(timestamp, site_name, plant_number, plant_height_ft_cleaned) %>% rename(plant_height_ft = plant_height_ft_cleaned)
+
+june_health_assess <- june_health_assess %>% mutate(plant_height_ft = as.numeric(plant_height_ft))
+
+june_health_assess <- june_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
+
+
+
+## --------------------------------------------------------
+# Parse cm
+june_health_assess <- june_health_assess %>% mutate(
+  # Clean up the text for consistency (e.g., remove extra spaces, make lowercase)
+  height_str = str_to_lower(str_trim(dbh_cm)),
+  
+  # Extract the first decimal number, this will always be the cm
+  # Note that broadly "\\d+\\.?\\d*" selection nomenclature simily breaks down to: get the "Digits, maybe a dot, maybe more digits"
+  # Where the "\\d+" gets all the first whole digits,
+  # then the "\\.?" will check whether there is a literal decimal point,
+  # if there is then "\\d*" gets all remaining digits
+  dbh_cm = as.numeric(str_extract(height_str, "\\d+\\.?\\d*")),
+  
+) %>% select(-height_str) # Only keep the new dbh value
+
+
+## ----message=FALSE, warning=FALSE------------------------
+cleaning <- june_health_assess %>%
+  mutate(
+    densio_north = as.integer(parse_number(densio_north)),
+    densio_south = as.integer(parse_number(densio_south)),
+    densio_east  = as.integer(parse_number(densio_east)),
+    densio_west  = as.integer(parse_number(densio_west))
+  )
+
+
+## ----warning=FALSE---------------------------------------
+# Plants 6, 17, 22, 38, 43, 44, 47, 71, 72
+
+# Plant 6
+    # Read: "Same as SH5"
+    # SH5's densio readings: 48 56 94 96
+row_index <- which(cleaning$plant_number == 6 & cleaning$site_name == "WCP")
+cleaning$densio_north[row_index] <- 48
+cleaning$densio_east[row_index]  <- 56
+cleaning$densio_south[row_index] <- 94
+cleaning$densio_west[row_index]  <- 96
+
+# Plant 17
+    # Read: "W - 33. E - 12. N - 68. S - 2. 30% open, 70% canopy cover"
+row_index <- which(cleaning$plant_number == 17 & cleaning$site_name == "WCP")
+cleaning$densio_north[row_index] <- 68
+cleaning$densio_east[row_index]  <- 12
+cleaning$densio_south[row_index] <- 2
+cleaning$densio_west[row_index]  <- 33
+
+# Plant 22
+  # Read: "22  -- a number Densiometer measures not relevant because seedling was overtaken by honeysuckle. Honeysuckle was cut away before assessing. ng"
+row_index <- which(cleaning$plant_number == 22 & cleaning$site_name == "WCP")
+cleaning$densio_north[row_index] <- NA
+cleaning$densio_east[row_index]  <- NA
+cleaning$densio_south[row_index] <- NA
+cleaning$densio_west[row_index]  <- NA
+
+# Plant 38
+    # Read: "Not relevant because this individual's highest point is below the line of forb vegetation cover which is not consistent throughout the season. Therefore, the densiometer read right now is not representative. Also, the tree is dead."
+row_index <- which(cleaning$plant_number == 38 & cleaning$site_name == "WCP")
+cleaning$densio_north[row_index] <- NA
+cleaning$densio_east[row_index]  <- NA
+cleaning$densio_south[row_index] <- NA
+cleaning$densio_west[row_index]  <- NA
+
+# Plant 43
+    # Read: "E - 7. S - 6. W - 1. N - 5. 19.76% open, 80.24% canopy cover"
+row_index <- which(cleaning$plant_number == 43 &  cleaning$site_name == "WCP")
+cleaning$densio_north[row_index] <- 5
+cleaning$densio_east[row_index]  <- 7
+cleaning$densio_south[row_index] <- 6
+cleaning$densio_west[row_index]  <- 1
+
+# Plant 44
+    # Read: "E - 8. S - 5. W - 10. N - 95 30.7% filled, 69.3% canopy cover"
+row_index <- which(cleaning$plant_number == 44 & cleaning$site_name == "WCP")
+cleaning$densio_north[row_index] <- 95
+cleaning$densio_east[row_index]  <- 8
+cleaning$densio_south[row_index] <- 5
+cleaning$densio_west[row_index]  <- 10
+
+# Plant 47
+    # Read: "E - 7. N - 4. S - 12. W - 3. 27% open, 73% canopy cover."
+row_index <- which(cleaning$plant_number == 47 & cleaning$site_name == "WCP")
+cleaning$densio_north[row_index] <- 4
+cleaning$densio_east[row_index]  <- 7
+cleaning$densio_south[row_index] <- 12
+cleaning$densio_west[row_index]  <- 3
+
+# Plant 71
+    # Read: "W - 32. E - 76. S - 10. N - 32. 39% empty or 61% canopy cover."
+row_index <- which(cleaning$plant_number == 71 & cleaning$site_name == "WCP")
+cleaning$densio_north[row_index] <- 32
+cleaning$densio_east[row_index]  <- 76
+cleaning$densio_south[row_index] <- 10
+cleaning$densio_west[row_index]  <- 32
+
+# Plant 72
+    # Read: "S - 1. E - 56. N - 53. W - 54. 43% open or 57% canopy cover."
+row_index <- which(cleaning$plant_number == 72 & cleaning$site_name == "WCP")
+cleaning$densio_north[row_index] <- 53
+cleaning$densio_east[row_index]  <- 56
+cleaning$densio_south[row_index] <- 1
+cleaning$densio_west[row_index]  <- 54
+
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  original_north = june_health_assess$densio_north,
+  clean_north    = cleaning$densio_north,
+  
+  original_south = june_health_assess$densio_south,
+  clean_south    = cleaning$densio_south,
+  
+  original_east  = june_health_assess$densio_east,
+  clean_east     = cleaning$densio_east,
+  
+  original_west  = june_health_assess$densio_west,
+  clean_west     = cleaning$densio_west
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Overwrite original densio columns with cleaned versions
+june_health_assess <- june_health_assess %>%
+  mutate(
+    densio_north = as.integer(parse_number(densio_north)),
+    densio_south = as.integer(parse_number(densio_south)),
+    densio_east  = as.integer(parse_number(densio_east)),
+    densio_west  = as.integer(parse_number(densio_west))
+  )
+
+june_health_assess <- june_health_assess %>% rows_update(cleaning, by = c("timestamp", "plant_number", "site_name"))
+
+
+
+## ----cleaning_canker_3-----------------------------------
+cleaning <- cleaning %>% mutate(base_canker_area = if_else(visible_canker == "No", 0, base_canker_area))
+cleaning <- cleaning %>% mutate(trunk_canker_area = if_else(visible_canker == "No", 0, trunk_canker_area))
+cleaning <- cleaning %>% mutate(circum_girdled_canker = if_else(visible_canker == "No", 0, circum_girdled_canker))
+ 
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  visible_canker = june_health_assess$visible_canker,
+  original_trunk  = june_health_assess$trunk_canker_area,
+  clean_trunk = cleaning$trunk_canker_area,
+  original_base   = june_health_assess$base_canker_area,
+  clean_base  = cleaning$base_canker_area,
+  original_girdle = june_health_assess$circum_girdled_canker,
+  clean_girdle = cleaning$circum_girdled_canker
+)
+
+comparison <- comparison %>%
+  arrange(factor(visible_canker, levels = c("No", "Yes")))  # "No" first, then "Yes"
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes 
+june_health_assess <- june_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+
+
+
+## --------------------------------------------------------
+cleaning <- june_health_assess %>%
+  mutate(
+    base_epicormics = if_else(!is.na(base_epicormics) & base_epicormics != 0, "Yes", "No"),
+    trunk_epicormics = if_else(!is.na(trunk_epicormics) & trunk_epicormics != 0, "Yes", "No")
+  )
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  original_base_ep = june_health_assess$base_epicormics,
+  clean_base_ep  = cleaning$base_epicormics,
+  
+  original_trunk_ep = june_health_assess$trunk_epicormics,
+  clean_trunk_ep    = cleaning$trunk_epicormics,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+june_health_assess <- june_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+
+
+## --------------------------------------------------------
+# Add column to see what as.numeric does to the values 
+cleaning <- june_health_assess %>% mutate(seed_estimate_numeric = parse_number(seed_estimate)) %>% select(timestamp, site_name, plant_number, seed_estimate, seed_estimate_numeric)
+
+# Change to "Few (<50)" or "Lots (>50)"
+cleaning <- cleaning %>% mutate(
+  cleaned_seed_est = case_when(
+    str_detect(tolower(seed_estimate), "unable") ~ NA,
+    str_detect(tolower(seed_estimate), "unsure") ~ NA,
+    parse_number(seed_estimate) <= 50 ~ "Few (<50)",
+    parse_number(seed_estimate) > 50 ~ "Lots (>50)",
+    tolower(seed_estimate) == "few" ~ "Few (<50)",
+    tolower(seed_estimate) == "hundreds" ~ "Lots (>50)",
+  )
+)
+
+# Table of before and after for verification
+datatable(
+  cleaning %>% select(-timestamp, -seed_estimate_numeric),
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+cleaning <- cleaning %>% mutate(seed_estimate = cleaned_seed_est) %>% select(-seed_estimate_numeric, -cleaned_seed_est) 
+june_health_assess <- june_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
+cleaning <- june_health_assess # reset for testing
+
+
+
+## --------------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(
+  aspect = case_when(
+    aspect == "N/A" ~ NA,
+    aspect == "n/a" ~ NA,
+    aspect == 0 ~ NA, # For some slopes which were 0, aspect was also noted as 0
+    aspect == "North" ~ "N",
+    aspect == "East" ~ "E",
+    aspect == "South" ~ "S",
+    aspect == "West" ~ "W",
+    TRUE ~ aspect
+  )
+)
+
+
+
+## --------------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(
+  upland_rip = recode(
+    june_health_assess$upland_rip,
+    "Upland: For our purposes, any land that is not riparian (even if not particularly hilly or even elevated)" = "Upland",
+    "Riparian: On land immediately adjacent to rivers, streams, lakes, etc. or within flooding zone" = "Riparian",
+  )
+)
+
+
+## ----cleaning_purdue_1-----------------------------------
+june_health_assess <- june_health_assess %>% mutate(
+  purdue_severity_canker = recode(
+    june_health_assess$purdue_severity_canker,
+    "1. Fewer than 3 active cankers that are all smaller than 2-3 inches in length or diameter OR fewer than 3 inactive cankers." = "1",
+    "2. More than 3 active cankers, OR 2-5 shallow (with no dead tissue) healed over with cracks less than 7 inches long." = "2",
+"3. More than 5 active OR inactive cankers cracked through the bark to the tissue below which have healed over, but you still see the level of damage." = "3",
+"4. Cankers occur all over the 10-foot area, with deep cracks and both active and inactive cankers." = "4",
+"5. Tree almost dead, mostly inactive cankers with deep cracks to dead tissue." = "5"
+  )
+)
+
+june_health_assess <- june_health_assess %>% mutate(
+  purdue_severity_canopy = recode(
+    june_health_assess$purdue_severity_canopy,
+    "1. No apparent crown dieback." = "1",
+    "2. Some but limited crown dieback." = "2",
+"3. Significant dieback in canopy, limited degree of new growth." = "3",
+"4. Major dieback in canopy, and limited or no new growth on terminal branches. Often segments of shredded or broken pieces of bark.  Epicormic branches present." = "4",
+"5. The canopy shows significant damage (large dead limbs, often broken limbs) also. Leaves only or mostly present as epicormic branches on trunk or base." = "5"
+  )
+)
+
+
+## --------------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(has_callous = case_when(
+  has_callous == "NA - no large cankers present" ~ NA,
+  TRUE ~ has_callous
+))
+
+
+## --------------------------------------------------------
+# Select columns of interest for this correction
+cleaning <- june_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, signs_of_damage_seedling)
+
+# Signs of dmg only affects seedlings
+cleaning <- cleaning %>% filter(adult_or_seedling == "Seedling") 
+
+# Seperate rows by the comma-seperated values to correct naming directly 
+cleaning <- cleaning %>% separate_rows(signs_of_damage_seedling, sep = ",\\s*") 
+
+# Rename the individual responses 
+cleaning <- cleaning %>% mutate(signs_of_damage_seedling = case_when(
+    signs_of_damage_seedling == "Deer browse" ~ "Deer browse",
+    signs_of_damage_seedling == "Deer rub" ~ "Deer rub",
+    signs_of_damage_seedling == "Having been mowed in the past" ~ "Mowed",
+    signs_of_damage_seedling == "Vole (nibbling on the bark)" ~ "Vole damage",
+    signs_of_damage_seedling == "Rabbit browse" ~ "Rabbit browse",
+    signs_of_damage_seedling == NA ~ "No damage",
+    TRUE ~ "No damage"
+  ))
+
+# Recombine rows based on site, plant_number 
+cleaning <- cleaning %>% group_by(timestamp) %>% mutate(signs_of_damage_seedling = paste(signs_of_damage_seedling, collapse = ", ")) %>% ungroup()
+
+cleaning <- cleaning %>% distinct()
+
+# Demonstrating changes 
+original <- june_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, signs_of_damage_seedling)
+
+cleaning <- original %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
+                                                            
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  adult_or_seedling = cleaning$adult_or_seedling,
+  original = original$signs_of_damage_seedling,
+  cleaned = cleaning$signs_of_damage_seedling
+)
+
+comparison <- comparison %>%
+  arrange(factor(adult_or_seedling, levels = c("Seedling", "Adult")))  
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+june_health_assess <- june_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
+cleaning <- june_health_assess # reset for testing
+
+
+## --------------------------------------------------------
+# Remove extra df created for demonstration
+rm(list = setdiff(ls(), "june_health_assess"))
+
+# 1. Create a data frame of the column names and their precise internal type (e.g., double, integer)
+data_types_table <- data.frame(
+  Variable_Name = names(june_health_assess),
+  Specific_Data_Type = sapply(june_health_assess, typeof),
+  row.names = NULL
+)
+
+# 2. View it as a beautifully formatted table right in your console
+knitr::kable(data_types_table, format = "markdown")
+
+
