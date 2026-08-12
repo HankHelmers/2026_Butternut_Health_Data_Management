@@ -10,7 +10,7 @@ The health assessments [evolved considerably](https://docs.google.com/document/d
 
 Here, we document the data processing, merging, quality control, and cleaning conducted to account for the form's evolution. The following R Scripts produce two homogenized datasets for data collected from 2024 onward and a separate one for 2025 onward.
 
-<img width="3700" height="1721" alt="2026_Flowchart_Butternut_Health_Data_Management" src="https://github.com/user-attachments/assets/79aec1aa-b3f7-4d23-8ebe-71de219bcd44" />
+<img width="3700" height="1721" alt="2026_Flowchart_Butternut_Health_Data_Management (1)" src="https://github.com/user-attachments/assets/98824369-8b80-4516-b01b-c132d1c39400" />
 Figure 1. (Click to enlarge for text) Flowchart of data management steps taken to prepare the butternut health assessment data from 2024 to 2026. 
 
 ## Folder Descriptions
