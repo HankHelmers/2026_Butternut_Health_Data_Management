@@ -4,6 +4,7 @@ library(styler)
 library(knitr)     # purl
 library(dplyr)     # Data selecting and filtering
 library(lubridate) # For working with dates and times
+library(DT)        # datatables for visualizing changes
 
 # ---------------------------------
 # Import data

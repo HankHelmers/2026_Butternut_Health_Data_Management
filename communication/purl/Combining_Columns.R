@@ -105,7 +105,7 @@ datatable(
 # Apply to original dataset
 after_health_assess <- after_health_assess %>% mutate(a_circum_girdled = if_else(
   after_health_assess$a_dead_or_alive == "Alive", a_a_circum_girdled, a_d_circum_girdled
-)) %>% select(-a_a_trunk_canker_area, -a_d_trunk_canker_area)
+)) %>% select(-a_a_circum_girdled, -a_d_circum_girdled)
 
 
 ## --------------------------------------------------------

@@ -19,18 +19,78 @@ knit: >
   })
 ---
 
+## Site names
+Correct capitalization inconsistencies with CPVT and Sugar River.
 
-# Categorical renamings 
+```{r}
+# Correct capitalization inconsistencies with CPVT and Sugar River
+after_health_assess <- after_health_assess %>%
+  mutate(site_name = case_when(
+    site_name == "Cpvt" ~ "CPVT",
+    str_detect(site_name, "SR") ~ "SR", # Some of the SR's include the individual by accident, e.g. "SR-10"
+    TRUE ~ site_name # Otherwise, keep name the same
+  ))
+```
+
+## GPS - Numeric NA renamings
+Presence of several different ways of saying an NA. Here I clarify them all to actual NA values.
+
+```{r}
+after_health_assess <- after_health_assess %>% mutate(
+  gps_north = case_when(
+    gps_north == 0 ~ NA,
+    gps_north == "Na" ~ NA,
+    gps_north == "N/A" ~ NA,
+    gps_north == "X" ~ NA,
+    TRUE ~ gps_north
+  ),
+  gps_west = case_when(
+    gps_west == 0 ~ NA,
+    gps_west == "Na" ~ NA,
+    gps_west == "N/A" ~ NA,
+    gps_west == "X" ~ NA,
+    TRUE ~ gps_west
+  )
+)
+
+```
+
 
 ## Epicormics Y/N --> Yes/No
 We decided on consistent language for boolean True/False values to be set as Yes/No.
 ```{r}
-cleaning <- after_health_assess %>% select(timestamp, site_name, plant_number)
+cleaning <- after_health_assess %>%
+  mutate(
+    # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
+    a_base_epicormics = if_else(a_base_epicormics == "Y", "Yes", a_base_epicormics),
+    a_base_epicormics = if_else(a_base_epicormics == "N", "No", a_base_epicormics),
+    a_trunk_epicormics = if_else(a_trunk_epicormics == "Y", "Yes", a_trunk_epicormics),
+    a_trunk_epicormics = if_else(a_trunk_epicormics == "N", "No", a_trunk_epicormics)
+  )
 
-# s_visible_cankers
-# a_trunk_epicormics
-# a_base_epicormics
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  original_base_ep = after_health_assess$a_base_epicormics,
+  clean_base_ep  = cleaning$a_base_epicormics,
+  
+  original_trunk_ep = after_health_assess$a_trunk_epicormics,
+  clean_trunk_ep    = cleaning$a_trunk_epicormics,
+)
 
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 ```
 
 
@@ -46,13 +106,7 @@ cleaning <- after_health_assess %>% select(timestamp, site_name, plant_number, a
 cleaning <- cleaning %>% mutate(
   cleaned_seed_est = case_when(
     str_detect(a_a_seed_estimate, "Lots - more than 50 seeds on the tree") ~ "Lots (>50)",
-    str_detect(a_a_seed_estimate, "Few - less than 50 seeds on the tree") ~ "Lots (>50)",
-    # str_detect(tolower(a_a_seed_estimate), "unable") ~ NA,
-    # str_detect(tolower(a_a_seed_estimate), "unsure") ~ NA,
-    # parse_number(a_a_seed_estimate) <= 50 ~ "Few (<50)",
-    # parse_number(a_a_seed_estimate) > 50 ~ "Lots (>50)",
-    # tolower(a_a_seed_estimate) == "few" ~ "Few (<50)",
-    # tolower(a_a_seed_estimate) == "hundreds" ~ "Lots (>50)",
+    str_detect(a_a_seed_estimate, "Few - less than 50 seeds on the tree") ~ "Few (<50)"
   )
 )
 
@@ -70,8 +124,6 @@ datatable(
 # Applying the changes
 cleaning <- cleaning %>% mutate(a_a_seed_estimate = cleaned_seed_est) %>% select(-cleaned_seed_est) 
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
-cleaning <- after_health_assess # reset for testing
-
 ```
 
 
@@ -80,11 +132,16 @@ Consistency in naming
 * Some entries had N/A & n/a --> NA 
 * Other entries were fully typed out like: "North" --> N
 ```{r}
-after_health_assess <- after_health_assess %>% mutate(
-  aspect = case_when(
+cleaning <- after_health_assess %>% select(timestamp, site_name, plant_number, aspect)
+
+# To uppercase
+cleaning <- cleaning %>% mutate(aspect = toupper(aspect))
+
+cleaning <- cleaning %>% mutate(
+  aspect_clean = case_when(
     aspect == "N/A" ~ NA,
-    aspect == "n/a" ~ NA,
-    aspect == 0 ~ NA, # For some slopes which were 0, aspect was also noted as 0
+    str_detect(aspect, "[0-9]") ~ NA, # For some slopes which were 0, aspect was also noted as 0/1, so if contains a number set to NA
+    aspect == "WNW" ~ "NW",
     aspect == "North" ~ "N",
     aspect == "East" ~ "E",
     aspect == "South" ~ "S",
@@ -93,6 +150,20 @@ after_health_assess <- after_health_assess %>% mutate(
   )
 )
 
+# Table of before and after for verification
+datatable(
+  cleaning %>% select(-timestamp),
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+cleaning <- cleaning %>% mutate(aspect = aspect_clean) %>% select(-aspect_clean) 
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
 ```
 
 
@@ -111,9 +182,12 @@ after_health_assess <- after_health_assess %>% mutate(
 ## Purdue severity ratings (Canker & Canopy)
 Removes additional text description
 ```{r cleaning_purdue_1}
+after_health_assess$a_a_purdue_severity_canker
+
+# Note: If NA, leaves as NA
 after_health_assess <- after_health_assess %>% mutate(
-  purdue_severity_canker = recode(
-    after_health_assess$purdue_severity_canker,
+  a_a_purdue_severity_canker = recode(
+    after_health_assess$a_a_purdue_severity_canker,
     "1. Fewer than 3 active cankers that are all smaller than 2-3 inches in length or diameter OR fewer than 3 inactive cankers." = "1",
     "2. More than 3 active cankers, OR 2-5 shallow (with no dead tissue) healed over with cracks less than 7 inches long." = "2",
     "3. More than 5 active OR inactive cankers cracked through the bark to the tissue below which have healed over, but you still see the level of damage." = "3",
@@ -122,9 +196,10 @@ after_health_assess <- after_health_assess %>% mutate(
   )
 )
 
+# Note: If NA, leaves as NA
 after_health_assess <- after_health_assess %>% mutate(
-  purdue_severity_canopy = recode(
-    after_health_assess$purdue_severity_canopy,
+  a_a_purdue_severity_canopy = recode(
+    after_health_assess$a_a_purdue_severity_canopy,
     "1. No apparent crown dieback." = "1",
     "2. Some but limited crown dieback." = "2",
     "3. Significant dieback in canopy, limited degree of new growth." = "3",
@@ -134,45 +209,36 @@ after_health_assess <- after_health_assess %>% mutate(
 )
 ```
 
-## Callousing NA option 
-One option for callousing is "NA - no large cankers present". Here I make the actual value NA. 
-```{r}
-after_health_assess <- after_health_assess %>% mutate(has_callous = case_when(
-  has_callous == "NA - no large cankers present" ~ NA,
-  TRUE ~ has_callous
-))
-```
-
 ## Signs of damage
 Rename the options selected in the signs of damage to consistent forms
 ```{r}
 # Select columns of interest for this correction
-cleaning <- after_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, signs_of_damage_seedling)
+cleaning <- after_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, s_signs_damage)
 
 # Signs of dmg only affects seedlings
 cleaning <- cleaning %>% filter(adult_or_seedling == "Seedling") 
 
 # Seperate rows by the comma-seperated values to correct naming directly 
-cleaning <- cleaning %>% separate_rows(signs_of_damage_seedling, sep = ",\\s*") 
+cleaning <- cleaning %>% separate_rows(s_signs_damage, sep = ",\\s*") 
 
 # Rename the individual responses 
-cleaning <- cleaning %>% mutate(signs_of_damage_seedling = case_when(
-  signs_of_damage_seedling == "Deer browse" ~ "Deer browse",
-  signs_of_damage_seedling == "Deer rub" ~ "Deer rub",
-  signs_of_damage_seedling == "Having been mowed in the past" ~ "Mowed",
-  signs_of_damage_seedling == "Vole (nibbling on the bark)" ~ "Vole damage",
-  signs_of_damage_seedling == "Rabbit browse" ~ "Rabbit browse",
-  signs_of_damage_seedling == NA ~ "No damage",
+cleaning <- cleaning %>% mutate(s_signs_damage = case_when(
+  s_signs_damage == "Deer browse" ~ "Deer browse",
+  s_signs_damage == "Deer rub" ~ "Deer rub",
+  s_signs_damage == "Having been mowed in the past" ~ "Mowed",
+  s_signs_damage == "Vole (nibbling on the bark)" ~ "Vole damage",
+  s_signs_damage == "Rabbit browse" ~ "Rabbit browse",
+  s_signs_damage == NA ~ "No damage",
   TRUE ~ "No damage"
 ))
 
 # Recombine rows based on site, plant_number 
-cleaning <- cleaning %>% group_by(timestamp) %>% mutate(signs_of_damage_seedling = paste(signs_of_damage_seedling, collapse = ", ")) %>% ungroup()
+cleaning <- cleaning %>% group_by(timestamp) %>% mutate(s_signs_damage = paste(s_signs_damage, collapse = ", ")) %>% ungroup()
 
 cleaning <- cleaning %>% distinct()
 
 # Demonstrating changes 
-original <- after_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, signs_of_damage_seedling)
+original <- after_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, s_signs_damage)
 
 cleaning <- original %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
 
@@ -180,8 +246,8 @@ comparison <- tibble(
   site_name = cleaning$site_name,
   plant_number = cleaning$plant_number,
   adult_or_seedling = cleaning$adult_or_seedling,
-  original = original$signs_of_damage_seedling,
-  cleaned = cleaning$signs_of_damage_seedling
+  original = original$s_signs_damage,
+  cleaned = cleaning$s_signs_damage
 )
 
 comparison <- comparison %>%

@@ -1,27 +1,4 @@
----
-title: "2025_August_Unique_Type_Conversion"
-always_allow_html: true
-output:
-  html_document:
-    toc: true
-    toc_depth: 2
-    toc_float:
-      collapsed: false
-      smooth_scroll: true
-knit: >
-  (function(inputFile, encoding) {
-    rmarkdown::render(
-      inputFile, 
-      encoding = encoding, 
-      output_file = "2025_June_July_Unique_Type_Conversion.html",
-      output_dir = "C:/Users/helmerhj/Documents/GitHub/2026_Butternut_Health_Data_Management/communication/rpub"
-    )
-  })
----
-
-
-# Visible canker (adult & seedling)
-```{r}
+## --------------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -54,11 +31,9 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
-```
 
 
-# Visible callous 
-```{r}
+## --------------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -91,16 +66,9 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
-```
 
 
-# Canker areas: Adding 0s for those without canker
-If 'visible_canker' is NO then canker percentages (base/trunk/girdled) are 0.
-
-The form using a Yes/No "Is there visible canker?" question. If the answer was "No" then the numeric questions (a_base_canker_area, a_trunk_canker_area, etc.) are skipped resulting in empty data entries. However, these entries do not represent the numeric value that should be there: they should be 0. 
-
-## Adults
-```{r}
+## --------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(a_base_canker_area = if_else(a_visible_canker == "No", 0, a_base_canker_area))
 
 cleaning <- cleaning %>% mutate(a_9_feet_canker_area = if_else(a_visible_canker == "No", 0, a_9_feet_canker_area))
@@ -132,10 +100,9 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
-```
 
-## Seedlings
-```{r}
+
+## --------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(s_base_canker_area = if_else(s_visible_canker == "No", 0, s_base_canker_area))
 
 cleaning <- cleaning %>% mutate(s_stem_canker_area = if_else(s_visible_canker == "No", 0, s_stem_canker_area))
@@ -166,4 +133,4 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
-```
+
