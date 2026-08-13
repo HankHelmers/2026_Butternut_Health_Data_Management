@@ -119,15 +119,6 @@ june_health_assess <- june_health_assess %>% mutate(
 )
 ```
 
-## Callousing NA option 
-One option for callousing is "NA - no large cankers present". Here I make the actual value NA. 
-```{r}
-june_health_assess <- june_health_assess %>% mutate(has_callous = case_when(
-  has_callous == "NA - no large cankers present" ~ NA,
-  TRUE ~ has_callous
-))
-```
-
 ## Signs of damage
 Rename the options selected in the signs of damage to consistent forms
 ```{r}

@@ -19,6 +19,40 @@ knit: >
   })
 ---
 
+##  Plant Numbers
+We decided that the plant numbers should rename a character value. This was because of some unique circumstances with some individuals requiring a character to distinguish. For instance, 206 and 206a, 67a and 67b, or NBL01.
+
+However, many of them get entered with additional leading 0s like "001", "002", etc.
+
+Here, I remove those leading 0s for consistency.
+```{r}
+cleaning <- after_health_assess %>%
+  mutate(
+    plant_number = sub("^0+", "", plant_number)
+  )
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  original_plant_number = after_health_assess$plant_number,
+  cleaned_plant_number = cleaning$plant_number,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+```
+
+
 ## Site names
 Correct capitalization inconsistencies with CPVT and Sugar River.
 
@@ -56,7 +90,9 @@ after_health_assess <- after_health_assess %>% mutate(
 ```
 
 
-## Epicormics Y/N --> Yes/No
+## Renaming Y/N --> Yes/No
+
+### Epicormics
 We decided on consistent language for boolean True/False values to be set as Yes/No.
 ```{r}
 cleaning <- after_health_assess %>%
@@ -77,6 +113,79 @@ comparison <- tibble(
   
   original_trunk_ep = after_health_assess$a_trunk_epicormics,
   clean_trunk_ep    = cleaning$a_trunk_epicormics,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+```
+
+### Visible canker (adult & seedling)
+```{r}
+cleaning <- after_health_assess %>%
+  mutate(
+    # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
+    a_visible_canker = if_else(a_visible_canker == "Y", "Yes", a_visible_canker),
+    a_visible_canker = if_else(a_visible_canker == "N", "No", a_visible_canker),
+    s_visible_canker = if_else(s_visible_canker == "Y", "Yes", s_visible_canker),
+    s_visible_canker = if_else(s_visible_canker == "N", "No", s_visible_canker)
+  )
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  original_a_vis_canker = after_health_assess$a_visible_canker,
+  clean_a_vis_canker  = cleaning$a_visible_canker,
+  
+  original_s_vis_canker = after_health_assess$s_visible_canker,
+  clean_s_vis_canker    = cleaning$s_visible_canker,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+```
+
+
+### Visible callous 
+```{r}
+cleaning <- after_health_assess %>%
+  mutate(
+    # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
+    a_a_visible_callous = if_else(a_a_visible_callous == "Y", "Yes", a_a_visible_callous),
+    a_a_visible_callous = if_else(a_a_visible_callous == "N", "No", a_a_visible_callous),
+    s_a_visible_callous = if_else(s_a_visible_callous == "Y", "Yes", s_a_visible_callous),
+    s_a_visible_callous = if_else(s_a_visible_callous == "N", "No", s_a_visible_callous)
+  )
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  original_a_vis_callous = after_health_assess$a_a_visible_callous,
+  clean_a_vis_callous  = cleaning$a_a_visible_callous,
+  
+  original_s_vis_canker = after_health_assess$s_a_visible_callous,
+  clean_s_vis_callous   = cleaning$s_a_visible_callous,
 )
 
 datatable(
