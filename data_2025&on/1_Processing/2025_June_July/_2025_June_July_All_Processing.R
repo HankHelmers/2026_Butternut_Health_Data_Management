@@ -54,8 +54,8 @@ rm(list = setdiff(ls(), "june_health_assess"))
 # Write to CSV
 write.csv(june_health_assess, "output_data/1_processed_June_July_2025_Health_Assessments.csv", row.names = FALSE)
 
+# ---------------------------------
 # Data types
-
 # 1. Create a data frame of the column names and their precise internal type (e.g., double, integer)
 data_types_table <- data.frame(
   Variable_Name = names(june_health_assess),

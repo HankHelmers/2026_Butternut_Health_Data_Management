@@ -12,8 +12,10 @@ The retyping is organized by which individual that variable applies to.
 ## All individuals 
 - GPS retyping in the final cleaning step due to necessary data cleaning
 - Slope retyped in the final cleaning step due ||
+- Height || 
 
 ```{r}
+# Hybrid characters
 after_health_assess <- after_health_assess %>% mutate(shape_terminal_bud = as.character(shape_terminal_bud))
 after_health_assess <- after_health_assess %>% mutate(shape_lenticels = as.character(shape_lenticels))
 after_health_assess <- after_health_assess %>% mutate(shape_leaf_scar = as.character(shape_leaf_scar))
@@ -24,6 +26,9 @@ after_health_assess <- after_health_assess %>% mutate(shape_hairs = as.character
 
 ### All adults
 ```{r}
+# Canopy 
+after_health_assess <- after_health_assess %>% mutate(a_a_percent_live_canopy = as.integer(a_a_percent_live_canopy))
+
 # Canker
 after_health_assess <- after_health_assess %>% mutate(a_base_canker_area = as.integer(a_base_canker_area))
 after_health_assess <- after_health_assess %>% mutate(a_9_feet_canker_area = as.integer(a_9_feet_canker_area))

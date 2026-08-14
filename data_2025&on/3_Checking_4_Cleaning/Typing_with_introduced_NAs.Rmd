@@ -76,7 +76,6 @@ after_health_assess <- after_health_assess %>% mutate(slope = as.integer(slope))
 ## Height
 One height entry said "E", a likely misentry from the aspect question right before the height question in the form.
 
-## Plant height
 ```{r}
 cleaning <- after_health_assess
 

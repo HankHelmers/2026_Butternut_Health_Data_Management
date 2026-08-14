@@ -19,6 +19,39 @@ june_health_assess <- june_health_assess %>% mutate(
 
 
 ## ------------------------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(
+  aspect = case_when(
+    aspect == "N/A" ~ NA,
+    aspect == "n/a" ~ NA,
+    aspect == 0 ~ NA, # For some slopes which were 0, aspect was also noted as 0
+    aspect == "North" ~ "N",
+    aspect == "East" ~ "E",
+    aspect == "South" ~ "S",
+    aspect == "West" ~ "W",
+    TRUE ~ aspect
+  )
+)
+
+
+
+## ------------------------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(adult_or_seedling = case_when(
+  adult_or_seedling == "Yes" ~ "Seedling",
+  adult_or_seedling == "No" ~ "Adult"
+))
+
+
+## ------------------------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(
+  upland_rip = recode(
+    june_health_assess$upland_rip,
+    "Upland: For our purposes, any land that is not riparian (even if not particularly hilly or even elevated)" = "Upland",
+    "Riparian: On land immediately adjacent to rivers, streams, lakes, etc. or within flooding zone" = "Riparian",
+  )
+)
+
+
+## ------------------------------------------------------------------
 cleaning <- june_health_assess
 
 # Change to "Few (<50)" or "Lots (>50)"
@@ -60,39 +93,6 @@ datatable(
 # Applying the changes
 june_health_assess <- june_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 
-
-
-## ------------------------------------------------------------------
-june_health_assess <- june_health_assess %>% mutate(
-  aspect = case_when(
-    aspect == "N/A" ~ NA,
-    aspect == "n/a" ~ NA,
-    aspect == 0 ~ NA, # For some slopes which were 0, aspect was also noted as 0
-    aspect == "North" ~ "N",
-    aspect == "East" ~ "E",
-    aspect == "South" ~ "S",
-    aspect == "West" ~ "W",
-    TRUE ~ aspect
-  )
-)
-
-
-
-## ------------------------------------------------------------------
-june_health_assess <- june_health_assess %>% mutate(adult_or_seedling = case_when(
-  adult_or_seedling == "Yes" ~ "Seedling",
-  adult_or_seedling == "No" ~ "Adult"
-))
-
-
-## ------------------------------------------------------------------
-june_health_assess <- june_health_assess %>% mutate(
-  upland_rip = recode(
-    june_health_assess$upland_rip,
-    "Upland: For our purposes, any land that is not riparian (even if not particularly hilly or even elevated)" = "Upland",
-    "Riparian: On land immediately adjacent to rivers, streams, lakes, etc. or within flooding zone" = "Riparian",
-  )
-)
 
 
 ## ----cleaning_purdue_1---------------------------------------------

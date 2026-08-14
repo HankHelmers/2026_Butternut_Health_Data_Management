@@ -61,10 +61,20 @@ after_health_assess <- after_health_assess %>%
     s_a_visible_callous, s_a_percent_live_canopy
   )
 
-# ---------------------------------
 # Remove clutter from environment
 rm(list = setdiff(ls(), union("june_health_assess", "after_health_assess")))
 
-# ---------------------------------
 # Write to CSV
 write.csv(after_health_assess, "output_data/1_processed_August_2025_Health_Assessments.csv", row.names = FALSE)
+
+# ---------------------------------
+# Data types
+# 1. Create a data frame of the column names and their precise internal type (e.g., double, integer)
+data_types_table <- data.frame(
+  Variable_Name = names(after_health_assess),
+  Specific_Data_Type = sapply(after_health_assess, typeof),
+  row.names = NULL
+)
+
+# 2. View it as a beautifully formatted table right in your console
+knitr::kable(data_types_table, format = "markdown")
