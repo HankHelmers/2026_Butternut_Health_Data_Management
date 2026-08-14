@@ -1,0 +1,45 @@
+
+
+## GPS
+
+### ILM 586 "--73.329" --> remove "-73.329"
+```{r}
+cleaning <- after_health_assess
+
+row_index <- which(cleaning$site_name == "ILM" & cleaning$plant_number == 586)
+cleaning$gps_west[row_index] <- -73.329
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = (cleaning %>% filter(site_name == "ILM") %>% filter(plant_number == 586))$site_name,
+  og_value = (after_health_assess %>% filter(site_name == "ILM") %>% filter(plant_number == 586))$gps_west,
+  cleaned_value = (cleaning %>% filter(site_name == "ILM") %>% filter(plant_number == 586))$gps_west,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
+
+```
+
+## Slope
+One individual had an input slope of "Yes (no measurement tool with me)"
+The photos for this individual were unavailable, so --after talking with Emma--
+we decided to go with NA.
+
+Sugar River #3 
+- NA for slope
+- NA for aspect 
+
+
+## Plant heights
+# ILM	3	E

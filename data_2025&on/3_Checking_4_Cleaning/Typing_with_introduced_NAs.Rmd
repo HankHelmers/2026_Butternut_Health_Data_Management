@@ -1,0 +1,77 @@
+# Typing with introduced NAs
+This cleaning step corrects the typing of variables that had mistyped entries leading to introduced NAs when attempting to impose a type on it.
+
+For instance, one GPS entry said "--73.223". If uncorrected during the cleaning step, running as.double("--73.223") would result in gps_west=NA, effectively erasing that data point.
+
+Instead, these mistyped errors are corrected in "Data_Entry_Corrections.Rmd" and then re-typed here. 
+
+## All individuals 
+
+### GPS: Retype to double
+One GPS entry said "--73.223".
+```{r}
+cleaning <- after_health_assess
+
+# Apply retyping
+cleaning <- cleaning %>% mutate(gps_west = as.double(gps_west)) 
+cleaning <- cleaning %>% mutate(gps_north = as.double(gps_north))
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  og_gps_north = after_health_assess$gps_north,
+  cleaned_gps_north = cleaning$gps_north,
+  og_gps_west = after_health_assess$gps_west,
+  cleaned_gps_west = cleaning$gps_west,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% mutate(gps_west = as.double(gps_west)) 
+after_health_assess <- after_health_assess %>% mutate(gps_north = as.double(gps_north))
+
+```
+
+### Slope: Type to integer
+
+
+## Height
+One height entry said "E", a likely misentry from the aspect question right before the height question in the form.
+
+## Plant height
+```{r}
+cleaning <- after_health_assess
+
+# Apply retyping
+cleaning <- after_health_assess %>% mutate(plant_height_ft = as.double(plant_height_ft))
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  og_height = after_health_assess$plant_height_ft,
+  cleaned_height = cleaning$plant_height_ft
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% mutate(plant_height_ft = as.integer(plant_height_ft))
+```

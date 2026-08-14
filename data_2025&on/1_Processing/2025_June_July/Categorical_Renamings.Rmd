@@ -175,6 +175,5 @@ datatable(
 
 # Applying the changes
 june_health_assess <- june_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
-cleaning <- june_health_assess # reset for testing
 ```
 

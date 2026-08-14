@@ -12,7 +12,7 @@ june_health_assess <- read_csv("source_data/2025_June_July_Butternut_Health_Asse
 
 # ---------------------------------
 # 1a. Data Processing
-june_processing_path <- "data_2025&on/1_Processing/2025_June_July/1a_Data_Processing/"
+june_processing_path <- "data_2025&on/1_Processing/2025_June_July/"
 source(paste0(june_processing_path, "Preparing_Columns.R"))
 source(paste0(june_processing_path, "Typing.R"))
 source(paste0(june_processing_path, "Parse_NAs.R"))
@@ -43,8 +43,6 @@ rm(list = setdiff(ls(), "june_health_assess"))
 
 # Write to CSV
 write.csv(june_health_assess, "output_data/1_processed_June_July_2025_Health_Assessments.csv", row.names = FALSE)
-
-
 
 # Data types
 

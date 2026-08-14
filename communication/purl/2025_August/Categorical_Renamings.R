@@ -1,31 +1,4 @@
----
-title: "2025_August_Categorical_Renamings"
-always_allow_html: true
-output:
-  html_document:
-    toc: true
-    toc_depth: 2
-    toc_float:
-      collapsed: false
-      smooth_scroll: true
-knit: >
-  (function(inputFile, encoding) {
-    rmarkdown::render(
-      inputFile, 
-      encoding = encoding, 
-      output_file = "2025_June_July_Categorical_Renamings.html",
-      output_dir = "C:/Users/helmerhj/Documents/GitHub/2026_Butternut_Health_Data_Management/communication/rpub"
-    )
-  })
----
-
-##  Plant Numbers
-We decided that the plant numbers should rename a character value. This was because of some unique circumstances with some individuals requiring a character to distinguish. For instance, 206 and 206a, 67a and 67b, or NBL01.
-
-However, many of them get entered with additional leading 0s like "001", "002", etc.
-
-Here, I remove those leading 0s for consistency.
-```{r}
+## ----------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     plant_number = sub("^0+", "", plant_number)
@@ -50,13 +23,9 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
-```
 
 
-## Site names
-Correct capitalization inconsistencies with CPVT and Sugar River.
-
-```{r}
+## ----------------------------------------------------
 # Correct capitalization inconsistencies with CPVT and Sugar River
 after_health_assess <- after_health_assess %>%
   mutate(site_name = case_when(
@@ -64,12 +33,9 @@ after_health_assess <- after_health_assess %>%
     str_detect(site_name, "SR") ~ "SR", # Some of the SR's include the individual by accident, e.g. "SR-10"
     TRUE ~ site_name # Otherwise, keep name the same
   ))
-```
 
-## GPS - Numeric NA renamings
-Presence of several different ways of saying an NA. Here I clarify them all to actual NA values.
 
-```{r}
+## ----------------------------------------------------
 after_health_assess <- after_health_assess %>% mutate(
   gps_north = case_when(
     gps_north == 0 ~ NA,
@@ -87,14 +53,9 @@ after_health_assess <- after_health_assess %>% mutate(
   )
 )
 
-```
 
 
-## Renaming Y/N --> Yes/No
-
-### Epicormics
-We decided on consistent language for boolean True/False values to be set as Yes/No.
-```{r}
+## ----------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -127,10 +88,9 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
-```
 
-### Visible canker (adult & seedling)
-```{r}
+
+## ----------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -163,11 +123,9 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
-```
 
 
-### Visible callous 
-```{r}
+## ----------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -200,14 +158,9 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
-```
 
 
-## Seed estimate: Text to categorical
-Before August+ we did not have consistent options, so people could type in whatever estimate they preferred. 
-
-Based on the numeric values they inputted, I assign the same categories used in August+. In August+, the two options are "Few - less than 50 seeds on the tree" or "Lots - more than 50 seeds on the tree"
-```{r}
+## ----------------------------------------------------
 # Add column to see what as.numeric does to the values 
 cleaning <- after_health_assess %>% select(timestamp, site_name, plant_number, a_a_seed_estimate)
 
@@ -233,14 +186,9 @@ datatable(
 # Applying the changes
 cleaning <- cleaning %>% mutate(a_a_seed_estimate = cleaned_seed_est) %>% select(-cleaned_seed_est) 
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
-```
 
 
-## Aspect
-Consistency in naming
-* Some entries had N/A & n/a --> NA 
-* Other entries were fully typed out like: "North" --> N
-```{r}
+## ----------------------------------------------------
 cleaning <- after_health_assess %>% select(timestamp, site_name, plant_number, aspect)
 
 # To uppercase
@@ -273,12 +221,9 @@ datatable(
 # Applying the changes
 cleaning <- cleaning %>% mutate(aspect = aspect_clean) %>% select(-aspect_clean) 
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
-```
 
 
-## Upland/Riparian
-Removes additional text description
-```{r}
+## ----------------------------------------------------
 after_health_assess <- after_health_assess %>% mutate(
   upland_rip = recode(
     after_health_assess$upland_rip,
@@ -286,11 +231,9 @@ after_health_assess <- after_health_assess %>% mutate(
     "Riparian: On land immediately adjacent to rivers, streams, lakes, etc. or within flooding zone" = "Riparian",
   )
 )
-```
 
-## Purdue severity ratings (Canker & Canopy)
-Removes additional text description
-```{r cleaning_purdue_1}
+
+## ----cleaning_purdue_1-------------------------------
 after_health_assess$a_a_purdue_severity_canker
 
 # Note: If NA, leaves as NA
@@ -316,11 +259,9 @@ after_health_assess <- after_health_assess %>% mutate(
     "5. The canopy shows significant damage (large dead limbs, often broken limbs) also. Leaves only or mostly present as epicormic branches on trunk or base." = "5"
   )
 )
-```
 
-## Signs of damage
-Rename the options selected in the signs of damage to consistent forms
-```{r}
+
+## ----------------------------------------------------
 # Select columns of interest for this correction
 cleaning <- after_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, s_signs_damage)
 
@@ -375,5 +316,4 @@ datatable(
 # Applying the changes
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
 cleaning <- after_health_assess # reset for testing
-```
 
