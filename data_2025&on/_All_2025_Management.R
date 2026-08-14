@@ -7,6 +7,8 @@ august_processing_path <- "data_2025&on/1_Processing/2025_August/"
 source(paste0(august_processing_path, "_2025_August_All_Processing.R"))
 
 # 2. Merging
+merging_path <- "data_2025&on/2_Processing/2025_August/"
+source(paste0(merging_path, "_All_Merging.R"))
 
 # 3. Checking & 4. Cleaning (Implemented together)
 ### Needs revamping after merger

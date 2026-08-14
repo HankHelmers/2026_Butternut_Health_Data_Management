@@ -57,9 +57,10 @@ after_health_assess <- after_health_assess %>%
     a_a_visible_callous, 
     
     # All seedlings
-    s_basal_diameter, s_germ_year_estimate, s_signs_damage, s_previous_stem_present,
-    s_dead_or_alive, s_percent_live_canopy, 
+    s_basal_diameter, s_germ_year_estimate, s_dead_or_alive, 
+    s_percent_live_canopy, 
     s_densio_north, s_densio_east, s_densio_south, s_densio_west,
+    s_signs_damage, s_previous_stem_present,
     s_visible_canker, s_base_canker_area, s_stem_canker_area, s_circum_girdled, 
     
     # Alive, seedlings only
