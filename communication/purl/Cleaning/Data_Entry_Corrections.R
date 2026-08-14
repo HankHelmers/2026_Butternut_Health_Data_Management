@@ -1,0 +1,153 @@
+## ----------------------------------------------------
+cleaning <- after_health_assess
+
+row_index <- which(cleaning$site_name == "ILM" & cleaning$plant_number == 586)
+cleaning$gps_west[row_index] <- -73.329
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = (cleaning %>% filter(site_name == "ILM") %>% filter(plant_number == 586))$site_name,
+  og_value = (after_health_assess %>% filter(site_name == "ILM") %>% filter(plant_number == 586))$gps_west,
+  cleaned_value = (cleaning %>% filter(site_name == "ILM") %>% filter(plant_number == 586))$gps_west,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
+
+
+
+## ----------------------------------------------------
+cleaning <- after_health_assess
+
+row_index <- which(cleaning$site_name == "SR" & cleaning$plant_number == 3)
+cleaning$slope[row_index] <- NA
+cleaning$aspect[row_index] <- NA
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = (cleaning %>% filter(site_name == "SR") %>% filter(plant_number == 3))$site_name,
+  og_slope = (after_health_assess %>% filter(site_name == "SR") %>% filter(plant_number == 3))$slope,
+  cleaned_slope = (cleaning %>% filter(site_name == "SR") %>% filter(plant_number == 3))$slope,
+  og_aspect = (after_health_assess %>% filter(site_name == "SR") %>% filter(plant_number == 3))$aspect,
+  cleaned_aspect= (cleaning %>% filter(site_name == "SR") %>% filter(plant_number == 3))$aspect
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
+
+
+## ----------------------------------------------------
+cleaning <- after_health_assess
+
+individuals_timestamp = ymd_hms("2025-09-15T08:38:10Z")
+
+# 2025-09-15T08:38:10Z, ILM 500, slope="o"
+row_index <- which(cleaning$timestamp == individuals_timestamp)
+cleaning$slope[row_index] <- 0
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = (cleaning %>% filter(timestamp == individuals_timestamp))$site_name,
+  plant_number = (after_health_assess %>% filter(timestamp == individuals_timestamp))$plant_number,
+  og_slope = (after_health_assess %>% filter(timestamp == individuals_timestamp))$slope,
+  cleaned_slope = (cleaning %>% filter(timestamp == individuals_timestamp))$slope
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
+
+
+## ----------------------------------------------------
+cleaning <- after_health_assess
+
+individuals_timestamp = ymd_hms("2025-09-19T13:48:15Z")
+
+# 2025-09-19T13:48:15Z, ILM	#364, aspect = 0, slope = NA
+row_index <- which(cleaning$timestamp ==individuals_timestamp)
+cleaning$slope[row_index] <- 0
+cleaning$aspect[row_index] <- NA
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = (cleaning %>% filter(timestamp == individuals_timestamp))$site_name,
+  plant_number = (after_health_assess %>% filter(timestamp == individuals_timestamp))$plant_number,
+  og_slope = (after_health_assess %>% filter(timestamp == individuals_timestamp))$slope,
+  cleaned_slope = (cleaning %>% filter(timestamp == individuals_timestamp))$slope,
+  og_aspect = (after_health_assess %>% filter(timestamp == individuals_timestamp))$aspect,
+  cleaned_aspect = (cleaning %>% filter(timestamp == individuals_timestamp))$aspect
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
+
+
+## ----------------------------------------------------
+cleaning <- after_health_assess
+
+individuals_timestamp = ymd_hms("2025-09-15 08:38:10")
+
+# 2025-09-19T13:48:15Z, ILM	#364, aspect = 0, slope = NA
+row_index <- which(cleaning$timestamp ==individuals_timestamp)
+cleaning$plant_height_ft[row_index] <- 0
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = (cleaning %>% filter(timestamp == individuals_timestamp))$site_name,
+  plant_number = (after_health_assess %>% filter(timestamp == individuals_timestamp))$plant_number,
+  og_slope = (after_health_assess %>% filter(timestamp == individuals_timestamp))$plant_height_ft,
+  cleaned_slope = (cleaning %>% filter(timestamp == individuals_timestamp))$plant_height_ft
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
+

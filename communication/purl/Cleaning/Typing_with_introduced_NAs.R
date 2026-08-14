@@ -1,15 +1,4 @@
-# Typing with introduced NAs
-This cleaning step corrects the typing of variables that had mistyped entries leading to introduced NAs when attempting to impose a type on it.
-
-For instance, one GPS entry said "--73.223". If uncorrected during the cleaning step, running as.double("--73.223") would result in gps_west=NA, effectively erasing that data point.
-
-Instead, these mistyped errors are corrected in "Data_Entry_Corrections.Rmd" and then re-typed here. 
-
-## All individuals 
-
-### GPS: Retype to double
-One GPS entry said "--73.223".
-```{r}
+## ----------------------------------------------------
 cleaning <- after_health_assess
 
 # Apply retyping
@@ -39,10 +28,9 @@ datatable(
 after_health_assess <- after_health_assess %>% mutate(gps_west = as.double(gps_west)) 
 after_health_assess <- after_health_assess %>% mutate(gps_north = as.double(gps_north))
 
-```
 
-### Slope: Type to integer
-```{r}
+
+## ----------------------------------------------------
 cleaning <- after_health_assess
 
 # Apply retyping
@@ -68,14 +56,9 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% mutate(slope = as.integer(slope))
-```
 
 
-## Height
-One height entry said "E", a likely misentry from the aspect question right before the height question in the form.
-
-## Plant height
-```{r}
+## ----------------------------------------------------
 cleaning <- after_health_assess
 
 # Apply retyping
@@ -102,37 +85,4 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% mutate(plant_height_ft = as.double(plant_height_ft))
-```
 
-# Adults
-
-## DBH
-```{r}
-cleaning <- after_health_assess 
-
-# Apply retyping
-cleaning <- after_health_assess %>% mutate(a_DBH_cm = as.double(a_DBH_cm))
-cleaning <- cleaning %>% filter(adult_or_seedling == "Adult")
-
-# Demonstrating changes 
-comparison <- tibble(
-  timestamp = cleaning$timestamp,
-  site_name = cleaning$site_name,
-  plant_number = cleaning$plant_number,
-  og = (after_health_assess %>% filter(adult_or_seedling == "Adult"))$a_DBH_cm,
-  cleaned = cleaning$a_DBH_cm
-)
-
-datatable(
-  comparison,
-  options = list(
-    pageLength = 10,
-    scrollY = "400px",
-    scrollX = TRUE
-  ),
-  class = "stripe hover row-border order-column" # forces light theme
-)
-
-# Applying the changes
-after_health_assess <- after_health_assess %>% mutate(plant_height_ft = as.double(plant_height_ft))
-```

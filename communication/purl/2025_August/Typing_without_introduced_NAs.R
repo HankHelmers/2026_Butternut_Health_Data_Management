@@ -1,39 +1,20 @@
-
-# Typing_without_introduced_NAs.R
-
-Here I assign the correct data typings for the straightforward variables. 
-
-These stand in contrast to variables "with_introduced_NAs". These variables that have data entry mistakes which are fixed during cleaning. Attempting to impose a typing before this cleaning would lose data. 
-
-NA can accidently be introduced when not all data points match the expected typing. For instance, if a character value is in a column of expected integers. If I try to impose all as integers, as I must to change the typing of the variable, we would lose that character value.  
-
-The retyping is organized by which individual that variable applies to. 
-
-# All individuals 
-- GPS retyping in the final cleaning step due to necessary data cleaning
-- Slope retyped in the final cleaning step due ||
-
-```{r}
+## ----------------------------------------------------
 after_health_assess <- after_health_assess %>% mutate(shape_terminal_bud = as.character(shape_terminal_bud))
 after_health_assess <- after_health_assess %>% mutate(shape_lenticels = as.character(shape_lenticels))
 after_health_assess <- after_health_assess %>% mutate(shape_leaf_scar = as.character(shape_leaf_scar))
 after_health_assess <- after_health_assess %>% mutate(shape_hairs = as.character(shape_hairs))
-```
 
-# Adults
 
-## All adults
-```{r}
+## ----------------------------------------------------
 # Canker
 after_health_assess <- after_health_assess %>% mutate(a_base_canker_area = as.integer(a_base_canker_area))
 after_health_assess <- after_health_assess %>% mutate(a_9_feet_canker_area = as.integer(a_9_feet_canker_area))
 after_health_assess <- after_health_assess %>% mutate(a_trunk_canker_area = as.integer(a_trunk_canker_area))
 after_health_assess <- after_health_assess %>% mutate(a_circum_girdled = as.integer(a_circum_girdled))
-```
 
-# Seedlings
-```{r}
+
+## ----------------------------------------------------
 after_health_assess <- after_health_assess %>% mutate(s_base_canker_area = as.integer(s_base_canker_area))
 after_health_assess <- after_health_assess %>% mutate(s_stem_canker_area = as.integer(s_stem_canker_area))
 after_health_assess <- after_health_assess %>% mutate(s_circum_girdled = as.integer(s_circum_girdled))
-```
+

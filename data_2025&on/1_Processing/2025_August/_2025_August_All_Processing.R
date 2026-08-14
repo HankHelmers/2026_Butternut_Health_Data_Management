@@ -31,7 +31,6 @@ purl(input=paste0(august_processing_path,"Typing_without_introduced_NAs.Rmd"), o
 source(paste0(august_purl_path, "Typing_without_introduced_NAs.R"))
 
 
-
 # ---------------------------------
 # Re-order 
 after_health_assess <- after_health_assess %>%
@@ -67,15 +66,3 @@ rm(list = setdiff(ls(), union("june_health_assess", "after_health_assess")))
 # ---------------------------------
 # Write to CSV
 write.csv(after_health_assess, "output_data/1_processed_August_2025_Health_Assessments.csv", row.names = FALSE)
-
-# --------------------------------
-# View Data types
-# 1. Create a data frame of the column names and their precise internal type (e.g., double, integer)
-data_types_table <- data.frame(
-  Variable_Name = names(after_health_assess),
-  Specific_Data_Type = sapply(after_health_assess, typeof),
-  row.names = NULL
-)
-
-# 2. View it as a beautifully formatted table right in your console
-knitr::kable(data_types_table, format = "markdown")

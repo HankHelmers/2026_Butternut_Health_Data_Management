@@ -1,14 +1,18 @@
 library(knitr)
 library(tidyverse)
 
-cleaning_path <- "data_2025&on/4_Cleaning/"
+cleaning_path <- "data_2025&on/3_Checking_4_Cleaning/"
 cleaning_purl_path <- "communication/purl/Cleaning/"
 
-# Cleaning by specific variable
-source(paste0(cleaning_path, "Slope.R"))
+# Implement data checks
+purl(input=paste0(cleaning_path,"Implement_Data_Checks.Rmd"), output=paste0(cleaning_purl_path,"Implement_Data_Checks.R"))
+source(paste0(cleaning_purl_path,"Implement_Data_Checks.R"))
 
-purl(paste0())
-source(paste0(cleaning_path, "Slope.R"))
+# Errors during data entry
+purl(input=paste0(cleaning_path,"Data_Entry_Corrections.Rmd"), output=paste0(cleaning_purl_path,"Data_Entry_Corrections.R"))
+source(paste0(cleaning_purl_path,"Data_Entry_Corrections.R"))
 
 purl(input=paste0(cleaning_path,"Typing_with_introduced_NAs.Rmd"), output=paste0(cleaning_purl_path,"Typing_with_introduced_NAs.R"))
 source(paste0(cleaning_purl_path,"Typing_with_introduced_NAs.R"))
+
+

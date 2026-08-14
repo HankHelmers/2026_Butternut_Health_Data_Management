@@ -1,0 +1,29 @@
+## ----------------------------------------------------
+cleaning <- after_health_assess
+
+cleaning <- cleaning %>% mutate(gps_west = case_when(
+  # If positive make negative
+  gps_west > 0 ~ (-gps_west),
+  TRUE ~ gps_west
+))
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = (cleaning %>% filter(site_name == "CPVT"))$site_name,
+  original = (after_health_assess %>% filter(site_name == "CPVT"))$gps_west,
+  cleaned = (cleaning %>% filter(site_name == "CPVT"))$gps_west,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
+
