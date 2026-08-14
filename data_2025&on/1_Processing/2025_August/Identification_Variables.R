@@ -1,3 +1,9 @@
+
+# Identification Variables
+#   Here, I re-type and fix the primary problems with the most important identification variables prior to the data management which requires specifically referring to data entries.
+#   Specifically, timestamp, site name and plant initials.
+
+
 ## Timestamp
 # Convert timestamp 8/15/2025 12:33:57 --> 2025-08-15 12:33:57
 after_health_assess <- after_health_assess %>% mutate(timestamp = mdy_hms(timestamp))
@@ -20,23 +26,3 @@ after_health_assess <- after_health_assess %>% mutate(plant_initials = case_when
   site_name == "CPVT" ~ "BU",
   TRUE ~ plant_initials
 ))
-
-# Numeric NA renamings
-## GPS
-# Presence of several different ways of saying an NA. Here I clarify them all to actual NA values.
-after_health_assess <- after_health_assess %>% mutate(
-  gps_north = case_when(
-    gps_north == 0 ~ NA,
-    gps_north == "Na" ~ NA,
-    gps_north == "N/A" ~ NA,
-    gps_north == "X" ~ NA,
-    TRUE ~ gps_north
-  ),
-  gps_west = case_when(
-    gps_west == 0 ~ NA,
-    gps_west == "Na" ~ NA,
-    gps_west == "N/A" ~ NA,
-    gps_west == "X" ~ NA,
-    TRUE ~ gps_west
-  )
-)

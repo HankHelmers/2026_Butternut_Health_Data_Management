@@ -19,15 +19,15 @@ knit: >
   })
 ---
 
+# Adjustments from the form structure
+These are data changes required by the form structure. For instance, if "visible_canker" is "No" then canker percentages are skipped by the form and left as NA. Instead, these should all be 0. Thus, this space implements implicit updates to data values, due to the forms structure.
 
-
-
-# Canker areas: Adding 0s for those without canker
+## Canker areas: Adding 0s for those without canker
 If 'visible_canker' is NO then canker percentages (base/trunk/girdled) are 0.
 
 The form using a Yes/No "Is there visible canker?" question. If the answer was "No" then the numeric questions (a_base_canker_area, a_trunk_canker_area, etc.) are skipped resulting in empty data entries. However, these entries do not represent the numeric value that should be there: they should be 0. 
 
-## Adults
+### Adults
 ```{r}
 cleaning <- after_health_assess %>% mutate(a_base_canker_area = if_else(a_visible_canker == "No", 0, a_base_canker_area))
 
@@ -62,7 +62,7 @@ datatable(
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 ```
 
-## Seedlings
+### Seedlings
 ```{r}
 cleaning <- after_health_assess %>% mutate(s_base_canker_area = if_else(s_visible_canker == "No", 0, s_base_canker_area))
 

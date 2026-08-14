@@ -19,6 +19,12 @@ knit: >
   })
 ---
 
+# Categorical renamings
+These are the renamings of each categorical options. For instance, "Y"/"N"s to "Yes" and "No" or Purdue severity ratings from "1. Fewer than 3 active cankers that ..." to "1".
+
+This also includes standardizing the NA responds across values like GPS ("N/a", "n/a", 999) all mean NA.
+
+
 ##  Plant Numbers
 We decided that the plant numbers should rename a character value. This was because of some unique circumstances with some individuals requiring a character to distinguish. For instance, 206 and 206a, 67a and 67b, or NBL01.
 
@@ -76,6 +82,7 @@ after_health_assess <- after_health_assess %>% mutate(
     gps_north == "Na" ~ NA,
     gps_north == "N/A" ~ NA,
     gps_north == "X" ~ NA,
+    gps_north == 999 ~ NA,
     TRUE ~ gps_north
   ),
   gps_west = case_when(
@@ -83,6 +90,7 @@ after_health_assess <- after_health_assess %>% mutate(
     gps_west == "Na" ~ NA,
     gps_west == "N/A" ~ NA,
     gps_west == "X" ~ NA,
+    gps_north == 999 ~ NA,
     TRUE ~ gps_west
   )
 )
@@ -377,3 +385,4 @@ after_health_assess <- after_health_assess %>% rows_update(cleaning, by = c("tim
 cleaning <- after_health_assess # reset for testing
 ```
 
+# End

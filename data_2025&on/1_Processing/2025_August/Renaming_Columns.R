@@ -2,14 +2,11 @@
 # Date: 08-07-2026
 # Purpose: Prepare the data columns for use in analyses and review scripts. 
 #          This preparation mainly includes renaming and removal.
+# Renaming columns for readability & clarity
 
 
-## Renaming columns for readability & clarity
-
+## ---------------------------------
 # Remove unused columns
-after_health_assess <- after_health_assess %>% select(-`Column 65`)
-
-### August and on 2025 
 
 ## Same information as in June/July (there is a unique section below)
 ### basic information

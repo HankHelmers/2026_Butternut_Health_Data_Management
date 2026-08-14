@@ -9,7 +9,7 @@ NA can accidently be introduced when not all data points match the expected typi
 
 The retyping is organized by which individual that variable applies to. 
 
-# All individuals 
+## All individuals 
 - GPS retyping in the final cleaning step due to necessary data cleaning
 - Slope retyped in the final cleaning step due ||
 
@@ -20,9 +20,9 @@ after_health_assess <- after_health_assess %>% mutate(shape_leaf_scar = as.chara
 after_health_assess <- after_health_assess %>% mutate(shape_hairs = as.character(shape_hairs))
 ```
 
-# Adults
+## Adults
 
-## All adults
+### All adults
 ```{r}
 # Canker
 after_health_assess <- after_health_assess %>% mutate(a_base_canker_area = as.integer(a_base_canker_area))
@@ -31,9 +31,9 @@ after_health_assess <- after_health_assess %>% mutate(a_trunk_canker_area = as.i
 after_health_assess <- after_health_assess %>% mutate(a_circum_girdled = as.integer(a_circum_girdled))
 ```
 
-# Seedlings
+## Seedlings
 
-## All seedlings
+### All seedlings
 ```{r}
 # Densio
 after_health_assess <- after_health_assess %>% mutate(s_densio_north = as.integer(s_densio_north))
@@ -53,8 +53,10 @@ after_health_assess <- after_health_assess %>% mutate(s_stem_canker_area = as.in
 after_health_assess <- after_health_assess %>% mutate(s_circum_girdled = as.integer(s_circum_girdled))
 ```
 
-##Alive seedlings
+### Alive seedlings
 ```{r}
 # Canopy
 after_health_assess <- after_health_assess %>% mutate(s_a_percent_live_canopy = as.integer(s_a_percent_live_canopy))
 ```
+
+# End

@@ -2,8 +2,12 @@
 
 Combine some columns for variables shared between alive and dead individuals 
 
-# Adult combinations
-## Canker questions
+
+# Combining Columns 
+Here I combine the variables that are shared between alive and dead individuals. Currently, those variables are seperate due to seperate questions required on the form. However, since the values are measuring the same thing and there is another column distinguishing between alive and dead, it will simplify the dataset to combine these. 
+
+## Adult combinations
+### Canker questions
 1. visible_canker
 ```{r}
 cleaning <- after_health_assess %>% mutate(a_visible_canker = if_else(
@@ -120,7 +124,7 @@ after_health_assess <- after_health_assess %>% mutate(a_circum_girdled = if_else
 ```
 
 
-## Epicormics
+### Epicormics
 1. a_trunk_epicormics
 ```{r}
 cleaning <- after_health_assess %>% mutate(a_trunk_epicormics = if_else(
@@ -168,8 +172,8 @@ after_health_assess <- after_health_assess %>% mutate(a_base_epicormics = if_els
 ```
 
 
-# Seedling combination
-## Visible canker
+## Seedling combination
+### Visible canker
 ```{r}
 cleaning <- after_health_assess %>% mutate(s_visible_canker = if_else(
   after_health_assess$s_dead_or_alive == "Alive", s_a_visible_canker, s_d_visible_canker
@@ -191,4 +195,4 @@ after_health_assess <- after_health_assess %>% mutate(s_visible_canker = if_else
   after_health_assess$s_dead_or_alive == "Alive", s_a_visible_canker, s_d_visible_canker 
 )) %>% select(-s_a_visible_canker, -s_d_visible_canker)
 ```
-
+# End
