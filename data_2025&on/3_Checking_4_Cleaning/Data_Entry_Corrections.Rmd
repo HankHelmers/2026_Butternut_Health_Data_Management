@@ -4,6 +4,44 @@
 ## All Individuals
 
 ### GPS
+
+#### June/July 
+1. 2025-07-11T11:03:41Z	CPVT	gps_north="R5.332612" likely should be "44.332612" like the other CPVT individuals	
+
+```{r}
+cleaning <- after_health_assess
+
+individuals_timestamp = ymd_hms("2025-07-11T11:03:41Z")
+
+# Implement changes
+row_index <- which(cleaning$timestamp == individuals_timestamp)
+cleaning$gps_north[row_index] <- 44.332612
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = (cleaning %>% filter(timestamp == individuals_timestamp))$site_name,
+  plant_number = (after_health_assess %>% filter(timestamp == individuals_timestamp))$plant_number,
+  og_gps_west = (after_health_assess %>% filter(timestamp == individuals_timestamp))$gps_north,
+  cleaned = (cleaning %>% filter(timestamp == individuals_timestamp))$gps_north
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
+
+```
+
+
+#### August+
 1. 2025-09-12 09:40:47 ILM 586 "--73.329" --> remove "-73.329"
 ```{r}
 cleaning <- after_health_assess
@@ -80,7 +118,7 @@ datatable(
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
 ```
 
-#### August 
+#### August+
 1. 2025-09-25T13:41:48Z, ILM	#500	slope="o", should be 0
 
 ```{r}

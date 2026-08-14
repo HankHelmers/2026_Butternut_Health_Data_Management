@@ -1,0 +1,41 @@
+
+# Typing 
+Here I assign the correct data typings for the straightforward variables. 
+
+These stand in contrast to variables "with_introduced_NAs". These variables that have data entry mistakes which are fixed during cleaning. Attempting to impose a typing before this cleaning would lose data. 
+
+NA can accidentally be introduced when not all data points match the expected typing. For instance, if a character value is in a column of expected integers. If I try to impose all as integers, as I must to change the typing of the variable, we would lose that character value.  
+
+The retyping is organized by which individual that variable applies to. 
+
+## Seedling variables
+```{r}
+june_health_assess <- june_health_assess %>% mutate(shape_terminal_bud = as.character(shape_terminal_bud))
+june_health_assess <- june_health_assess %>% mutate(shape_lenticels = as.character(shape_lenticels))
+june_health_assess <- june_health_assess %>% mutate(shape_leaf_scar = as.character(shape_leaf_scar))
+june_health_assess <- june_health_assess %>% mutate(shape_hairs = as.character(shape_hairs))
+```
+
+## ****Canker areas to integer 
+NOTE: Right now, "Less than 10, but more than 0" just reads in as 10
+  
+Note: Using 'parse_number' first is very important. Parse_number retrieves the number from
+     within a string, removing excess characters, e.g. parse_number("70%") = 70.
+
+Then, as.integer turns it into an integer, but if you used only as.integer any excess characters would lead to parsing the whole value as NA, e.g. as.integer("70%") = NA.
+
+```{r}
+# Trunk canker area
+june_health_assess$trunk_canker_area <- as.integer(parse_number(june_health_assess$trunk_canker_area))
+
+# Circumference girdled
+june_health_assess$circum_girdled_canker <- as.integer(parse_number(june_health_assess$circum_girdled_canker))
+
+# Base canker area
+june_health_assess$base_canker_area <- as.integer(parse_number(june_health_assess$base_canker_area))
+
+# Percent live canopy
+june_health_assess$percent_live_canopy <- as.integer(parse_number(june_health_assess$percent_live_canopy))
+```
+
+# End

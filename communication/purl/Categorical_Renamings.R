@@ -1,22 +1,54 @@
-## ----------------------------------------------------
-# Add column to see what as.numeric does to the values 
-cleaning <- june_health_assess %>% mutate(seed_estimate_numeric = parse_number(seed_estimate)) %>% select(timestamp, site_name, plant_number, seed_estimate, seed_estimate_numeric)
+## ------------------------------------------------------------------
+# Presence of several different ways of saying an NA. Here I clarify them all to actual NA values.
+june_health_assess <- june_health_assess %>% mutate(
+  gps_north = case_when(
+    gps_north == 0 ~ NA,
+    gps_north == "Na" ~ NA,
+    gps_north == "N/A" ~ NA,
+    gps_north == "X" ~ NA,
+    TRUE ~ gps_north
+  ),
+  gps_west = case_when(
+    gps_west == 0 ~ NA,
+    gps_west == "Na" ~ NA,
+    gps_west == "N/A" ~ NA,
+    gps_west == "X" ~ NA,
+    TRUE ~ gps_west
+  )
+)
+
+
+## ------------------------------------------------------------------
+cleaning <- june_health_assess
 
 # Change to "Few (<50)" or "Lots (>50)"
-cleaning <- cleaning %>% mutate(
-  cleaned_seed_est = case_when(
-    str_detect(tolower(seed_estimate), "unable") ~ NA,
-    str_detect(tolower(seed_estimate), "unsure") ~ NA,
-    parse_number(seed_estimate) <= 50 ~ "Few (<50)",
-    parse_number(seed_estimate) > 50 ~ "Lots (>50)",
-    tolower(seed_estimate) == "few" ~ "Few (<50)",
-    tolower(seed_estimate) == "hundreds" ~ "Lots (>50)",
-  )
+cleaning <- cleaning %>% 
+  mutate(
+    # Safely convert to number first without cluttering the console
+    num_val = suppressWarnings(parse_number(seed_estimate)),
+    
+    seed_estimate = case_when(
+      str_detect(tolower(seed_estimate), "unable|unsure") ~ NA_character_,
+      tolower(seed_estimate) == "few"                      ~ "Few (<50)",
+      tolower(seed_estimate) == "hundreds"                 ~ "Lots (>50)",
+      num_val <= 50                                        ~ "Few (<50)",
+      num_val > 50                                         ~ "Lots (>50)",
+      TRUE                                                 ~ NA_character_
+    )
+  ) %>% 
+  select(-num_val) # Drop the temporary column
+
+# Demonstrating changes
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  original  = june_health_assess$seed_estimate,
+  clean = cleaning$seed_estimate,
 )
 
 # Table of before and after for verification
 datatable(
-  cleaning %>% select(-timestamp, -seed_estimate_numeric),
+  comparison,
   options = list(
     pageLength = 10,
     scrollY = "400px",
@@ -26,13 +58,11 @@ datatable(
 )
 
 # Applying the changes
-cleaning <- cleaning %>% mutate(seed_estimate = cleaned_seed_est) %>% select(-seed_estimate_numeric, -cleaned_seed_est) 
-june_health_assess <- june_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
-cleaning <- june_health_assess # reset for testing
+june_health_assess <- june_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 june_health_assess <- june_health_assess %>% mutate(
   aspect = case_when(
     aspect == "N/A" ~ NA,
@@ -48,7 +78,14 @@ june_health_assess <- june_health_assess %>% mutate(
 
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(adult_or_seedling = case_when(
+  adult_or_seedling == "Yes" ~ "Seedling",
+  adult_or_seedling == "No" ~ "Adult"
+))
+
+
+## ------------------------------------------------------------------
 june_health_assess <- june_health_assess %>% mutate(
   upland_rip = recode(
     june_health_assess$upland_rip,
@@ -58,7 +95,7 @@ june_health_assess <- june_health_assess %>% mutate(
 )
 
 
-## ----cleaning_purdue_1-------------------------------
+## ----cleaning_purdue_1---------------------------------------------
 june_health_assess <- june_health_assess %>% mutate(
   purdue_severity_canker = recode(
     june_health_assess$purdue_severity_canker,
@@ -82,7 +119,7 @@ june_health_assess <- june_health_assess %>% mutate(
 )
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 # Select columns of interest for this correction
 cleaning <- june_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, signs_of_damage_seedling)
 

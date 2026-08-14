@@ -1,4 +1,4 @@
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(a_base_canker_area = if_else(a_visible_canker == "No", 0, a_base_canker_area))
 
 cleaning <- cleaning %>% mutate(a_9_feet_canker_area = if_else(a_visible_canker == "No", 0, a_9_feet_canker_area))
@@ -32,7 +32,7 @@ datatable(
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(s_base_canker_area = if_else(s_visible_canker == "No", 0, s_base_canker_area))
 
 cleaning <- cleaning %>% mutate(s_stem_canker_area = if_else(s_visible_canker == "No", 0, s_stem_canker_area))

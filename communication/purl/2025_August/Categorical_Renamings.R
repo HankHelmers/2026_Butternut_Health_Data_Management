@@ -1,47 +1,11 @@
-## ----------------------------------------------------
-cleaning <- after_health_assess %>%
-  mutate(
-    plant_number = sub("^0+", "", plant_number)
-  )
-
-# Demonstrating changes 
-comparison <- tibble(
-  site_name = cleaning$site_name,
-  original_plant_number = after_health_assess$plant_number,
-  cleaned_plant_number = cleaning$plant_number,
-)
-
-datatable(
-  comparison,
-  options = list(
-    pageLength = 10,
-    scrollY = "400px",
-    scrollX = TRUE
-  ),
-  class = "stripe hover row-border order-column" # forces light theme
-)
-
-# Applying the changes
-after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
-
-
-## ----------------------------------------------------
-# Correct capitalization inconsistencies with CPVT and Sugar River
-after_health_assess <- after_health_assess %>%
-  mutate(site_name = case_when(
-    site_name == "Cpvt" ~ "CPVT",
-    str_detect(site_name, "SR") ~ "SR", # Some of the SR's include the individual by accident, e.g. "SR-10"
-    TRUE ~ site_name # Otherwise, keep name the same
-  ))
-
-
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 after_health_assess <- after_health_assess %>% mutate(
   gps_north = case_when(
     gps_north == 0 ~ NA,
     gps_north == "Na" ~ NA,
     gps_north == "N/A" ~ NA,
     gps_north == "X" ~ NA,
+    gps_north == 999 ~ NA,
     TRUE ~ gps_north
   ),
   gps_west = case_when(
@@ -49,13 +13,14 @@ after_health_assess <- after_health_assess %>% mutate(
     gps_west == "Na" ~ NA,
     gps_west == "N/A" ~ NA,
     gps_west == "X" ~ NA,
+    gps_north == 999 ~ NA,
     TRUE ~ gps_west
   )
 )
 
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -90,7 +55,7 @@ datatable(
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -125,7 +90,7 @@ datatable(
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -160,7 +125,7 @@ datatable(
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 # Add column to see what as.numeric does to the values 
 cleaning <- after_health_assess %>% select(timestamp, site_name, plant_number, a_a_seed_estimate)
 
@@ -188,7 +153,7 @@ cleaning <- cleaning %>% mutate(a_a_seed_estimate = cleaned_seed_est) %>% select
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 cleaning <- after_health_assess %>% select(timestamp, site_name, plant_number, aspect)
 
 # To uppercase
@@ -223,7 +188,7 @@ cleaning <- cleaning %>% mutate(aspect = aspect_clean) %>% select(-aspect_clean)
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 after_health_assess <- after_health_assess %>% mutate(
   upland_rip = recode(
     after_health_assess$upland_rip,
@@ -233,7 +198,7 @@ after_health_assess <- after_health_assess %>% mutate(
 )
 
 
-## ----cleaning_purdue_1-------------------------------
+## ----cleaning_purdue_1---------------------------------------------
 after_health_assess$a_a_purdue_severity_canker
 
 # Note: If NA, leaves as NA
@@ -261,7 +226,7 @@ after_health_assess <- after_health_assess %>% mutate(
 )
 
 
-## ----------------------------------------------------
+## ------------------------------------------------------------------
 # Select columns of interest for this correction
 cleaning <- after_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, s_signs_damage)
 

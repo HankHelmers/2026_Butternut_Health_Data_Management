@@ -5,7 +5,8 @@ library(DT)        # datatables for visualizing changes
 
 # ---------------------------------
 # Import data
-after_health_assess <- read_csv("source_data/July_7_2026_Revisions_Butternut_Health_Assessmen.csv")
+#   Suppressing the message because it just reads out all the column names
+after_health_assess <- suppressMessages(read_csv("source_data/July_7_2026_Revisions_Butternut_Health_Assessmen.csv", show_col_types = FALSE))
 
 # ---------------------------------
 # 1. Processing
@@ -17,7 +18,8 @@ source(paste0(august_processing_path, "Column_Removal.R"))
 purl(input=paste0(august_processing_path,"Combining_Columns.Rmd"), output=paste0(august_purl_path,"Combining_Columns.R"))
 source(paste0(august_purl_path,"Combining_Columns.R"))
 
-source(paste0(august_processing_path, "Identification_Variables.R"))
+purl(input=paste0(august_processing_path,"Identification_Variables.Rmd"), output=paste0(august_purl_path,"Identification_Variables.R"))
+source(paste0(august_purl_path, "Identification_Variables.R"))
 
 source(paste0(august_processing_path, "Removals.R"))
 

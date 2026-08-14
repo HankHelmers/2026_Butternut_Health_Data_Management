@@ -5,7 +5,7 @@ Here I assign the correct data typings for the straightforward variables.
 
 These stand in contrast to variables "with_introduced_NAs". These variables that have data entry mistakes which are fixed during cleaning. Attempting to impose a typing before this cleaning would lose data. 
 
-NA can accidently be introduced when not all data points match the expected typing. For instance, if a character value is in a column of expected integers. If I try to impose all as integers, as I must to change the typing of the variable, we would lose that character value.  
+NA can accidentally be introduced when not all data points match the expected typing. For instance, if a character value is in a column of expected integers. If I try to impose all as integers, as I must to change the typing of the variable, we would lose that character value.  
 
 The retyping is organized by which individual that variable applies to. 
 

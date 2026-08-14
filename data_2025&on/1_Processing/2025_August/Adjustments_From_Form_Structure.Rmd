@@ -95,3 +95,5 @@ datatable(
 # Applying the changes
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 ```
+
+# End

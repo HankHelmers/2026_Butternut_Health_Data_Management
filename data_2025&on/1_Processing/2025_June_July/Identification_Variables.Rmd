@@ -19,30 +19,51 @@ knit: >
   })
 ---
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-library(tidyverse)
-library(readr)
-library(DT)
-library(dplyr)
-library(styler)
-library(lubridate) # For working with dates and times
-
-original <- june_health_assess
-
-# # Imports all June/July 2025 data
-# june_health_assess <- read_csv("../data/Raw_Datasets/2025_June_July_Butternut_Health_Assessment_Form_Responses.csv")
-# 
-# source("../data_cleaning/2025_June_July_1_Preparing_Columns.R", local=TRUE)
-# source("../data_cleaning/2025_June_July_2_Type_Conversions.R", local=TRUE)
-# source("../data_cleaning/2025_June_July_3_Removing_Test_Entries.R", local=TRUE)
-# source("../data_cleaning/2025_June_July_4_Processing_Dead_Adults.R", local=TRUE)
-# 
-# exists("june_health_assess")
-```
-
 # Identification 
+Here, I re-type and fix the primary problems with the most important identification variables prior to the data management which requires specifically referring to data entries.
+
+Specifically, timestamp, plant numbers, site name, and plant initials.
 
 Note: Order of cleaning operations DOES matter as site and plant_number must be corrected prior to all other corrections. These variables serve to identify each individual entry ensuring that corrections are matched directly to the correct entry. 
+
+## Timestamp
+Convert timestamp 8/15/2025 12:33:57 --> 2025-08-15 12:33:57
+
+```{r}
+june_health_assess <- june_health_assess %>% mutate(timestamp = mdy_hms(timestamp))
+```
+
+## Plant numbers -- remove excess text
+
+Parsing the plant numbers as numbers rather than strings.
+
+```{r}
+# Remove 'SH' or 'SH ' from the beginning of plant numbers 
+june_health_assess$plant_number <- sub("^SH\\s*", "", june_health_assess$plant_number)
+
+cleaning <- june_health_assess
+cleaning$plant_number <- parse_number(cleaning$plant_number)
+
+# Demonstrating changes
+comparison <- tibble(
+  site = june_health_assess$site_name,
+  original = june_health_assess$plant_number,
+  clean = as.character(cleaning$plant_number)
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying changes
+june_health_assess <- june_health_assess %>% mutate(plant_number = as.character(parse_number(plant_number)))
+```
 
 ## Site names
 
@@ -64,49 +85,6 @@ june_health_assess <- june_health_assess %>%
     TRUE ~ site_name # Otherwise, keep name the same
   ))
 
-```
-
-## Plant numbers to numeric
-
-Parsing the plant numbers as numbers rather than strings.
-
-```{r}
-# Remove 'SH' or 'SH ' from the beginning of plant numbers 
-june_health_assess$plant_number <- sub("^SH\\s*", "", june_health_assess$plant_number)
-
-cleaning <- june_health_assess
-cleaning$plant_number <- parse_number(cleaning$plant_number)
-
-# Demonstrating changes
-comparison <- tibble(
-  original_plant_number = june_health_assess$plant_number,
-  clean_plant_number = cleaning$plant_number
-)
-
-datatable(
-  comparison,
-  options = list(
-    pageLength = 10,
-    scrollY = "400px",
-    scrollX = TRUE
-  ),
-  class = "stripe hover row-border order-column" # forces light theme
-)
-
-# Applying changes
-june_health_assess <- june_health_assess %>% mutate(plant_number = as.integer(parse_number(plant_number)))
-```
-
-## Adult and Seedling Labels
-Currently, the original question was "Is this individual a seedling?" so the inputs are all Yes or No.
-
-### a. Converting Yes/No to S/A
-First, convert all Yes responses into "Seedling" and Nos to "Adult". Then we will need to manually set the values for the individuals from the first day of assessment where we didn't have that question added yet. 
-```{r}
-june_health_assess <- june_health_assess %>% mutate(adult_or_seedling = case_when(
-  adult_or_seedling == "Yes" ~ "Seedling",
-  adult_or_seedling == "No" ~ "Adult"
-))
 ```
 
 ### b. Manually setting missing labels
@@ -142,3 +120,5 @@ june_health_assess <- june_health_assess %>% mutate(plant_initials = case_when(
 ))
 
 ```
+
+# End

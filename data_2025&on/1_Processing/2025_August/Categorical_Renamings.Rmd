@@ -25,53 +25,6 @@ These are the renamings of each categorical options. For instance, "Y"/"N"s to "
 This also includes standardizing the NA responds across values like GPS ("N/a", "n/a", 999) all mean NA.
 
 
-##  Plant Numbers
-We decided that the plant numbers should rename a character value. This was because of some unique circumstances with some individuals requiring a character to distinguish. For instance, 206 and 206a, 67a and 67b, or NBL01.
-
-However, many of them get entered with additional leading 0s like "001", "002", etc.
-
-Here, I remove those leading 0s for consistency.
-```{r}
-cleaning <- after_health_assess %>%
-  mutate(
-    plant_number = sub("^0+", "", plant_number)
-  )
-
-# Demonstrating changes 
-comparison <- tibble(
-  site_name = cleaning$site_name,
-  original_plant_number = after_health_assess$plant_number,
-  cleaned_plant_number = cleaning$plant_number,
-)
-
-datatable(
-  comparison,
-  options = list(
-    pageLength = 10,
-    scrollY = "400px",
-    scrollX = TRUE
-  ),
-  class = "stripe hover row-border order-column" # forces light theme
-)
-
-# Applying the changes
-after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
-```
-
-
-## Site names
-Correct capitalization inconsistencies with CPVT and Sugar River.
-
-```{r}
-# Correct capitalization inconsistencies with CPVT and Sugar River
-after_health_assess <- after_health_assess %>%
-  mutate(site_name = case_when(
-    site_name == "Cpvt" ~ "CPVT",
-    str_detect(site_name, "SR") ~ "SR", # Some of the SR's include the individual by accident, e.g. "SR-10"
-    TRUE ~ site_name # Otherwise, keep name the same
-  ))
-```
-
 ## GPS - Numeric NA renamings
 Presence of several different ways of saying an NA. Here I clarify them all to actual NA values.
 

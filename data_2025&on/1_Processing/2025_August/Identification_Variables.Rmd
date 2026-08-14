@@ -1,0 +1,73 @@
+
+# Identification Variables
+Here, I re-type and fix the primary problems with the most important identification variables prior to the data management which requires specifically referring to data entries.
+
+Specifically, timestamp, plant numbers, site name and plant initials.
+
+
+## Timestamp
+Convert timestamp 8/15/2025 12:33:57 --> 2025-08-15 12:33:57
+```{r}
+after_health_assess <- after_health_assess %>% mutate(timestamp = mdy_hms(timestamp))
+```
+
+## Plant numbers
+We decided that the plant numbers should rename a character value. This was because of some unique circumstances with some individuals requiring a character to distinguish. For instance, 206 and 206a, 67a and 67b, or NBL01.
+
+However, many of them get entered with additional leading 0s like "001", "002", etc.
+
+Here, I remove those leading 0s for consistency.
+```{r}
+cleaning <- after_health_assess %>%
+  mutate(
+    plant_number = sub("^0+", "", plant_number)
+  )
+
+# Demonstrating changes 
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  original_plant_number = after_health_assess$plant_number,
+  cleaned_plant_number = cleaning$plant_number,
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
+```
+
+
+## Site names
+Correct capitalization inconsistencies with CPVT and Sugar River.
+
+```{r}
+# Correct capitalization inconsistencies with CPVT and Sugar River
+after_health_assess <- after_health_assess %>%
+  mutate(site_name = case_when(
+    site_name == "Cpvt" ~ "CPVT",
+    str_detect(site_name, "SR") ~ "SR", # Some of the SR's include the individual by accident, e.g. "SR-10"
+    TRUE ~ site_name # Otherwise, keep name the same
+  ))
+```
+
+## Plant initials
+Standardizing the plant initials according to site.
+```{r}
+after_health_assess <- after_health_assess %>% mutate(plant_initials = case_when(
+  site_name == "WCP" ~ "SH",
+  site_name == "SR" ~ "SR",
+  site_name == "ILM" ~ "BU",
+  site_name == "CPVT" ~ "BU",
+  TRUE ~ plant_initials
+))
+```
+
+# End

@@ -8,25 +8,35 @@ library(DT)        # datatables for visualizing changes
 
 # ---------------------------------
 # Import data
-june_health_assess <- read_csv("source_data/2025_June_July_Butternut_Health_Assessment_Form_Responses.csv")
+#   Suppressing the message because it just reads out all the column names
+june_health_assess <- suppressMessages(read_csv("source_data/2025_June_July_Butternut_Health_Assessment_Form_Responses.csv", show_col_types = FALSE))
 
 # ---------------------------------
-# 1a. Data Processing
 june_processing_path <- "data_2025&on/1_Processing/2025_June_July/"
 source(paste0(june_processing_path, "Preparing_Columns.R"))
-source(paste0(june_processing_path, "Typing.R"))
-source(paste0(june_processing_path, "Parse_NAs.R"))
-source(paste0(june_processing_path, "Removals.R"))
 
+# Prepare timestamp & plant numbers before retrieving individual entries
 purl(input=paste0(june_processing_path,"Identification_Variables.Rmd"), output="communication/purl/Identification_Variables.R")
 source("communication/purl/Identification_Variables.R")
 
+# Remove testing individuals
+source(paste0(june_processing_path, "Removals.R"))
+
+# Retype the straight forward typings
+#   Noting that some variables aren't fully retyped until data cleaning step
+purl(input=paste0(june_processing_path,"Typing.Rmd"), output="communication/purl/Typing.R")
+source("communication/purl/Typing.R")
+
+# Special adjustments, per variable, due to form structure
+#   E.g., Height/densiomenter text to number, Epicormics from numeric to "Yes"/"No"
 purl(input=paste0(june_processing_path,"Adjustments_From_Form_Structure.Rmd"), output="communication/purl/Adjustments_From_Form_Structure.R")
 source("communication/purl/Adjustments_From_Form_Structure.R")
 
+#  Renamings of each categorical options
 purl(input=paste0(june_processing_path,"Categorical_Renamings.Rmd"), output="communication/purl/Categorical_Renamings.R")
 source("communication/purl/Categorical_Renamings.R")
 
+# Aligning photo data with renaming photo data
 source(paste0(june_processing_path, "Correct_Photo_Data.R"))
 
 # ---------------------------------
