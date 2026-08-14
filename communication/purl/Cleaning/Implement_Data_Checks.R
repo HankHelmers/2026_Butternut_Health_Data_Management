@@ -1,9 +1,11 @@
 ## ----------------------------------------------------
 cleaning <- after_health_assess
 
+test<-(after_health_assess$gps_west)
+
 cleaning <- cleaning %>% mutate(gps_west = case_when(
   # If positive make negative
-  gps_west > 0 ~ (-gps_west),
+  gps_west > 0 ~ (-1 * gps_west),
   TRUE ~ gps_west
 ))
 

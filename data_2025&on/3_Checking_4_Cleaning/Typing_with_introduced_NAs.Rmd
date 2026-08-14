@@ -41,7 +41,7 @@ after_health_assess <- after_health_assess %>% mutate(gps_north = as.double(gps_
 
 ```
 
-### Slope: Type to integer
+### Slope: Retype to integer
 ```{r}
 cleaning <- after_health_assess
 
@@ -50,6 +50,7 @@ cleaning <- cleaning %>% mutate(slope = as.integer(slope))
 
 # Demonstrating changes 
 comparison <- tibble(
+  timestamp = cleaning$timestamp,
   site_name = cleaning$site_name,
   plant_number = cleaning$plant_number,
   og = after_health_assess$slope,
@@ -106,7 +107,7 @@ after_health_assess <- after_health_assess %>% mutate(plant_height_ft = as.doubl
 
 # Adults
 
-## DBH
+## DBH: Retype to double
 ```{r}
 cleaning <- after_health_assess 
 
@@ -134,5 +135,5 @@ datatable(
 )
 
 # Applying the changes
-after_health_assess <- after_health_assess %>% mutate(plant_height_ft = as.double(plant_height_ft))
+after_health_assess <- after_health_assess %>% mutate(a_DBH_cm = as.double(a_DBH_cm))
 ```

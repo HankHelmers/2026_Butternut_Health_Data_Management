@@ -38,6 +38,7 @@ cleaning <- cleaning %>% mutate(slope = as.integer(slope))
 
 # Demonstrating changes 
 comparison <- tibble(
+  timestamp = cleaning$timestamp,
   site_name = cleaning$site_name,
   plant_number = cleaning$plant_number,
   og = after_health_assess$slope,
@@ -85,4 +86,34 @@ datatable(
 
 # Applying the changes
 after_health_assess <- after_health_assess %>% mutate(plant_height_ft = as.double(plant_height_ft))
+
+
+## ----------------------------------------------------
+cleaning <- after_health_assess 
+
+# Apply retyping
+cleaning <- after_health_assess %>% mutate(a_DBH_cm = as.double(a_DBH_cm))
+cleaning <- cleaning %>% filter(adult_or_seedling == "Adult")
+
+# Demonstrating changes 
+comparison <- tibble(
+  timestamp = cleaning$timestamp,
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  og = (after_health_assess %>% filter(adult_or_seedling == "Adult"))$a_DBH_cm,
+  cleaned = cleaning$a_DBH_cm
+)
+
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+after_health_assess <- after_health_assess %>% mutate(a_DBH_cm = as.double(a_DBH_cm))
 

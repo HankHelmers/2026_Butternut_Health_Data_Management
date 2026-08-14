@@ -81,16 +81,16 @@ after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("times
 ```
 
 #### August 
-1. 2025-09-15T08:38:10Z, ILM	#500	slope="o", should be 0
+1. 2025-09-25T13:41:48Z, ILM	#500	slope="o", should be 0
 
 ```{r}
 cleaning <- after_health_assess
 
-individuals_timestamp = ymd_hms("2025-09-15T08:38:10Z")
+individuals_timestamp = ymd_hms("2025-09-25T13:41:48Z")
 
 # 2025-09-15T08:38:10Z, ILM 500, slope="o"
 row_index <- which(cleaning$timestamp == individuals_timestamp)
-cleaning$slope[row_index] <- 0
+cleaning$slope[row_index] <- "0" # must be a character before numeric typing is imposed in "Typing with introduced NAs"
 
 # Demonstrating changes 
 comparison <- tibble(
@@ -203,7 +203,7 @@ cleaning <- after_health_assess
 
 individuals_timestamp = ymd_hms("2025-11-11T16:17:47Z")
 
-# 2025-09-19T13:48:15Z, ILM	#364, aspect = 0, slope = NA
+# Implement change
 row_index <- which(cleaning$timestamp ==individuals_timestamp)
 cleaning$a_DBH_cm[row_index] <-17.9
 cleaning$additional_notes <- paste0(cleaning$additional_notes, ", two-stemmed split trunk with DBHs 17.9, 14.0. The greater was chosen during data cleaning - Hank Helmers.")
@@ -240,7 +240,7 @@ cleaning <- after_health_assess
 
 individuals_timestamp = ymd_hms("2026-06-05T15:08:18Z")
 
-# 2025-09-19T13:48:15Z, ILM	#364, aspect = 0, slope = NA
+# Implement change
 row_index <- which(cleaning$timestamp ==individuals_timestamp)
 cleaning$a_DBH_cm[row_index] <-44.0
 cleaning$additional_notes <- paste0(cleaning$additional_notes, ", two-stemmed split trunk with DBHs 34.5, 44. The greater was chosen during data cleaning - Hank Helmers.")
@@ -275,12 +275,12 @@ Note said: "low split with 2 main branches", alive, adult
 ```{r}
 cleaning <- after_health_assess
 
-individuals_timestamp = ymd_hms("2026-06-05T15:08:18Z")
+individuals_timestamp = ymd_hms("2025-08-27T10:31:09Z")
 
-# 2025-09-19T13:48:15Z, ILM	#364, aspect = 0, slope = NA
+# Implement change
 row_index <- which(cleaning$timestamp ==individuals_timestamp)
-cleaning$a_DBH_cm[row_index] <-44.0
-cleaning$additional_notes <- paste0(cleaning$additional_notes, ", two-stemmed split trunk with DBHs 34.5, 44. The greater was chosen during data cleaning - Hank Helmers.")
+cleaning$a_DBH_cm[row_index] <-43.6
+cleaning$additional_notes <- paste0(cleaning$additional_notes, ", two-stemmed split trunk with DBHs 43.6, 30.7 (as noted by Kylie). The greater was chosen during data cleaning - Hank Helmers.")
 
 # Demonstrating changes 
 comparison <- tibble(
