@@ -44,21 +44,26 @@ after_health_assess <- after_health_assess %>%
     shape_hairs, upland_rip, associated_trees, competition, other_competition_response, additional_notes,
     
     # All Adults
-    a_DBH_cm, a_crown_class, a_dead_or_alive, a_visible_canker, 
-    a_base_canker_area, a_9_feet_canker_area, a_trunk_canker_area,
-    a_circum_girdled, a_trunk_epicormics, a_base_epicormics,
+    a_DBH_cm, a_crown_class, a_dead_or_alive,
+    a_percent_live_canopy, a_purdue_severity_canker, a_purdue_severity_canopy,
+    
+    a_visible_canker, a_base_canker_area, a_9_feet_canker_area, a_trunk_canker_area,
+    a_circum_girdled, 
+    
+    a_trunk_epicormics, a_base_epicormics,
     
     # Alive, adults only
-    a_a_percent_live_canopy, a_a_producing_seed, a_a_seed_estimate, a_a_seed_per_bunch, 
-    a_a_visible_callous, a_a_purdue_severity_canker, a_a_purdue_severity_canopy, 
+    a_a_producing_seed, a_a_seed_estimate, a_a_seed_per_bunch, 
+    a_a_visible_callous, 
     
     # All seedlings
-    s_basal_diameter, s_densio_north, s_densio_east, s_densio_south, s_densio_west,
-    s_signs_damage, s_previous_stem_present, s_germ_year_estimate, s_dead_or_alive,
+    s_basal_diameter, s_germ_year_estimate, s_signs_damage, s_previous_stem_present,
+    s_dead_or_alive, s_percent_live_canopy, 
+    s_densio_north, s_densio_east, s_densio_south, s_densio_west,
     s_visible_canker, s_base_canker_area, s_stem_canker_area, s_circum_girdled, 
     
     # Alive, seedlings only
-    s_a_visible_callous, s_a_percent_live_canopy
+    s_a_visible_callous
   )
 
 # Remove clutter from environment
