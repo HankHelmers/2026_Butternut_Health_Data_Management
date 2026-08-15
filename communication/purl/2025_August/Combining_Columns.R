@@ -1,4 +1,4 @@
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(a_visible_canker = if_else(
   after_health_assess$a_dead_or_alive == "Alive", a_a_visible_canker, a_d_visible_canker 
 ))
@@ -20,7 +20,7 @@ after_health_assess <- after_health_assess %>% mutate(a_visible_canker = if_else
 )) %>% select(-a_a_visible_canker, -a_d_visible_canker)
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(a_base_canker_area = if_else(
   after_health_assess$a_dead_or_alive == "Alive", a_a_base_canker_area, a_d_base_canker_area 
 ))
@@ -42,7 +42,7 @@ after_health_assess <- after_health_assess %>% mutate(a_base_canker_area = if_el
 )) %>% select(-a_a_base_canker_area, -a_d_base_canker_area )
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(a_9_feet_canker_area = if_else(
   after_health_assess$a_dead_or_alive == "Alive", a_a_9_feet_canker_area, a_d_9_feet_canker_area 
 ))
@@ -64,7 +64,7 @@ after_health_assess <- after_health_assess %>% mutate(a_9_feet_canker_area = if_
 )) %>% select(-a_a_9_feet_canker_area, -a_d_9_feet_canker_area)
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(a_trunk_canker_area = if_else(
   after_health_assess$a_dead_or_alive == "Alive", a_a_trunk_canker_area, a_d_trunk_canker_area
 ))
@@ -86,7 +86,7 @@ after_health_assess <- after_health_assess %>% mutate(a_trunk_canker_area = if_e
 )) %>% select(-a_a_trunk_canker_area, -a_d_trunk_canker_area)
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(a_circum_girdled = if_else(
   after_health_assess$a_dead_or_alive == "Alive", a_a_circum_girdled, a_d_circum_girdled
 ))
@@ -108,7 +108,7 @@ after_health_assess <- after_health_assess %>% mutate(a_circum_girdled = if_else
 )) %>% select(-a_a_circum_girdled, -a_d_circum_girdled)
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(a_trunk_epicormics = if_else(
   after_health_assess$a_dead_or_alive == "Alive", a_a_trunk_epicormics, a_d_trunk_epicormics
 ))
@@ -130,7 +130,7 @@ after_health_assess <- after_health_assess %>% mutate(a_trunk_epicormics = if_el
 )) %>% select(-a_a_trunk_epicormics, -a_d_trunk_epicormics )
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(a_base_epicormics = if_else(
   after_health_assess$a_dead_or_alive == "Alive", a_a_base_epicormics, a_d_base_epicormics
 ))
@@ -152,7 +152,7 @@ after_health_assess <- after_health_assess %>% mutate(a_base_epicormics = if_els
 )) %>% select(-a_a_base_epicormics, -a_d_base_epicormics)
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>% mutate(s_visible_canker = if_else(
   after_health_assess$s_dead_or_alive == "Alive", s_a_visible_canker, s_d_visible_canker
 ))

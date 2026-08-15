@@ -1,4 +1,4 @@
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 after_health_assess <- after_health_assess %>% mutate(
   gps_north = case_when(
     gps_north == 0 ~ NA,
@@ -20,7 +20,7 @@ after_health_assess <- after_health_assess %>% mutate(
 
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -55,7 +55,7 @@ datatable(
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -90,7 +90,7 @@ datatable(
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     # Seperating discretely to "Y"/"N" ensures that seedlings don't get assigned a epicormic value
@@ -125,7 +125,7 @@ datatable(
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 # Add column to see what as.numeric does to the values 
 cleaning <- after_health_assess %>% select(timestamp, site_name, plant_number, a_a_seed_estimate)
 
@@ -153,7 +153,7 @@ cleaning <- cleaning %>% mutate(a_a_seed_estimate = cleaned_seed_est) %>% select
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- after_health_assess %>% select(timestamp, site_name, plant_number, aspect)
 
 # To uppercase
@@ -188,7 +188,7 @@ cleaning <- cleaning %>% mutate(aspect = aspect_clean) %>% select(-aspect_clean)
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by = c("timestamp", "site_name", "plant_number"))
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 after_health_assess <- after_health_assess %>% mutate(
   upland_rip = recode(
     after_health_assess$upland_rip,
@@ -198,13 +198,13 @@ after_health_assess <- after_health_assess %>% mutate(
 )
 
 
-## ----cleaning_purdue_1---------------------------------------------
-after_health_assess$a_a_purdue_severity_canker
+## ----cleaning_purdue_1-------------------------------------------------------------------------------
+after_health_assess$a_purdue_severity_canker
 
 # Note: If NA, leaves as NA
 after_health_assess <- after_health_assess %>% mutate(
-  a_a_purdue_severity_canker = recode(
-    after_health_assess$a_a_purdue_severity_canker,
+  a_purdue_severity_canker = recode(
+    after_health_assess$a_purdue_severity_canker,
     "1. Fewer than 3 active cankers that are all smaller than 2-3 inches in length or diameter OR fewer than 3 inactive cankers." = "1",
     "2. More than 3 active cankers, OR 2-5 shallow (with no dead tissue) healed over with cracks less than 7 inches long." = "2",
     "3. More than 5 active OR inactive cankers cracked through the bark to the tissue below which have healed over, but you still see the level of damage." = "3",
@@ -215,8 +215,8 @@ after_health_assess <- after_health_assess %>% mutate(
 
 # Note: If NA, leaves as NA
 after_health_assess <- after_health_assess %>% mutate(
-  a_a_purdue_severity_canopy = recode(
-    after_health_assess$a_a_purdue_severity_canopy,
+  a_purdue_severity_canopy = recode(
+    after_health_assess$a_purdue_severity_canopy,
     "1. No apparent crown dieback." = "1",
     "2. Some but limited crown dieback." = "2",
     "3. Significant dieback in canopy, limited degree of new growth." = "3",
@@ -226,7 +226,7 @@ after_health_assess <- after_health_assess %>% mutate(
 )
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 # Select columns of interest for this correction
 cleaning <- after_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, s_signs_damage)
 

@@ -1,0 +1,19 @@
+```{r}
+library(dplyr)
+```
+
+# Direct Matches
+These are the variables that required no additional processing to be directly matched between June/July and August. 
+You can see the full list of which are which here: https://docs.google.com/spreadsheets/d/1QVQYW0Z-lzjaGrMnJum4yf0CQDpATa4U4rISqFzryJ4/edit?gid=1395132272#gid=1395132272
+
+I've done this by building up a new dataset (all_health_assess) column at a time.
+
+## All Individuals
+
+```{r}
+shared_all_inds <- 
+```
+
+
+
+# End

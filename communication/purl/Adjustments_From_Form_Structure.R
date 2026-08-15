@@ -1,4 +1,4 @@
-## ----cleaning_height_2---------------------------------------------
+## ----cleaning_height_2-------------------------------------------------------------------------------
 original <- june_health_assess
 
 june_health_assess <- june_health_assess %>% mutate(
@@ -59,7 +59,7 @@ datatable(
 
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 # Parse cm
 cleaning <- june_health_assess %>% mutate(
   # Clean up the text for consistency (e.g., remove extra spaces, make lowercase)
@@ -106,7 +106,7 @@ june_health_assess <- june_health_assess %>% mutate(dbh_cm = as.double(dbh_cm))
 
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- june_health_assess
 
 # Plants 6, 17, 22, 38, 43, 44, 47, 71, 72
@@ -240,7 +240,7 @@ june_health_assess <- june_health_assess %>%
   )
 
 
-## ----cleaning_canker_3---------------------------------------------
+## ----cleaning_canker_3-------------------------------------------------------------------------------
 cleaning <- june_health_assess
 cleaning <- cleaning %>% mutate(base_canker_area = if_else(visible_canker == "No", 0, base_canker_area))
 cleaning <- cleaning %>% mutate(trunk_canker_area = if_else(visible_canker == "No", 0, trunk_canker_area))
@@ -277,7 +277,7 @@ june_health_assess <- june_health_assess %>% rows_update(cleaning, by=c("timesta
 
 
 
-## ------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 cleaning <- june_health_assess %>%
   mutate(
     base_epicormics = if_else(!is.na(base_epicormics) & base_epicormics != 0, "Yes", "No"),

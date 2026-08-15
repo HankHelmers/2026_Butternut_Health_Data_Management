@@ -252,12 +252,12 @@ after_health_assess <- after_health_assess %>% mutate(
 ## Purdue severity ratings (Canker & Canopy)
 Removes additional text description
 ```{r cleaning_purdue_1}
-after_health_assess$a_a_purdue_severity_canker
+after_health_assess$a_purdue_severity_canker
 
 # Note: If NA, leaves as NA
 after_health_assess <- after_health_assess %>% mutate(
-  a_a_purdue_severity_canker = recode(
-    after_health_assess$a_a_purdue_severity_canker,
+  a_purdue_severity_canker = recode(
+    after_health_assess$a_purdue_severity_canker,
     "1. Fewer than 3 active cankers that are all smaller than 2-3 inches in length or diameter OR fewer than 3 inactive cankers." = "1",
     "2. More than 3 active cankers, OR 2-5 shallow (with no dead tissue) healed over with cracks less than 7 inches long." = "2",
     "3. More than 5 active OR inactive cankers cracked through the bark to the tissue below which have healed over, but you still see the level of damage." = "3",
@@ -268,8 +268,8 @@ after_health_assess <- after_health_assess %>% mutate(
 
 # Note: If NA, leaves as NA
 after_health_assess <- after_health_assess %>% mutate(
-  a_a_purdue_severity_canopy = recode(
-    after_health_assess$a_a_purdue_severity_canopy,
+  a_purdue_severity_canopy = recode(
+    after_health_assess$a_purdue_severity_canopy,
     "1. No apparent crown dieback." = "1",
     "2. Some but limited crown dieback." = "2",
     "3. Significant dieback in canopy, limited degree of new growth." = "3",
