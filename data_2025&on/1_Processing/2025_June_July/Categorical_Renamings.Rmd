@@ -70,12 +70,25 @@ june_health_assess <- june_health_assess %>% mutate(
 ### Adult and Seedling Labels
 Currently, the original question was "Is this individual a seedling?" so the inputs are all Yes or No.
 
-First, convert all Yes responses into "Seedling" and Nos to "Adult". Then we will need to manually set the values for the individuals from the first day of assessment where we didn't have that question added yet. 
+First, convert all Yes responses into "Seedling" and Nos to "Adult". 
 ```{r}
 june_health_assess <- june_health_assess %>% mutate(adult_or_seedling = case_when(
   adult_or_seedling == "Yes" ~ "Seedling",
   adult_or_seedling == "No" ~ "Adult"
 ))
+```
+
+Second, set the seedling/adult for the first two days (06-05, 06-06) based on presence of DBH and confirmation with the photos. 
+
+Here is a link where I verify with photos, linking to the photos: 
+https://docs.google.com/document/d/1jjsbuttnxnvHx3UyVWdrAe0-vcaKLf-qhb9dDDVGpV8/edit?tab=t.0#heading=h.74kcmgv1kkh9
+```{r}
+june_health_assess <- june_health_assess %>% mutate(adult_or_seedling = case_when(
+  timestamp < ymd_hms("2025-06-06 23:00:00") & dbh_cm > 0 ~ "Adult",
+  timestamp < ymd_hms("2025-06-06 23:00:00") & is.na(dbh_cm) ~ "Seedling",
+  TRUE ~ adult_or_seedling
+))
+
 ```
 
 ### Upland/Riparian

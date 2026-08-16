@@ -11,7 +11,17 @@
 
 # 10: Dead
 
-dead_adults_WCP = c(38, 2, 50, 3, 10)
+dead_WCP = c(38, 2, 50, 3, 10)
+
+dead_WCP_row <- june_health_assess %>% filter(site_name == "WCP" & plant_number %in% dead_WCP)
+
+dead_WCP_row <- dead_WCP_row %>% mutate(a_dead_or_alive = case_when(
+  # Dead individual that's an adult
+  (site_name == "WCP" & plant_number %in% dead_WCP & adult_or_seedling == "Adult") ~ "Dead",
+  
+  # All other adults are alive
+  #!(plant_number %in% dead_WCP) & adult_or_seedling == "Adult" ~ "Alive"
+))
 
 # --------------------
 # ILM  

@@ -1,4 +1,4 @@
-## ----------------------------------------------------------------------------------------------------
+## --------------------------------------------------
 # Presence of several different ways of saying an NA. Here I clarify them all to actual NA values.
 june_health_assess <- june_health_assess %>% mutate(
   gps_north = case_when(
@@ -18,7 +18,7 @@ june_health_assess <- june_health_assess %>% mutate(
 )
 
 
-## ----------------------------------------------------------------------------------------------------
+## --------------------------------------------------
 june_health_assess <- june_health_assess %>% mutate(
   aspect = case_when(
     aspect == "N/A" ~ NA,
@@ -34,14 +34,23 @@ june_health_assess <- june_health_assess %>% mutate(
 
 
 
-## ----------------------------------------------------------------------------------------------------
+## --------------------------------------------------
 june_health_assess <- june_health_assess %>% mutate(adult_or_seedling = case_when(
   adult_or_seedling == "Yes" ~ "Seedling",
   adult_or_seedling == "No" ~ "Adult"
 ))
 
 
-## ----------------------------------------------------------------------------------------------------
+## --------------------------------------------------
+june_health_assess <- june_health_assess %>% mutate(adult_or_seedling = case_when(
+  timestamp < ymd_hms("2025-06-06 23:00:00") & dbh_cm > 0 ~ "Adult",
+  timestamp < ymd_hms("2025-06-06 23:00:00") & is.na(dbh_cm) ~ "Seedling",
+  TRUE ~ adult_or_seedling
+))
+
+
+
+## --------------------------------------------------
 june_health_assess <- june_health_assess %>% mutate(
   upland_rip = recode(
     june_health_assess$upland_rip,
@@ -51,7 +60,7 @@ june_health_assess <- june_health_assess %>% mutate(
 )
 
 
-## ----------------------------------------------------------------------------------------------------
+## --------------------------------------------------
 cleaning <- june_health_assess
 
 # Change to "Few (<50)" or "Lots (>50)"
@@ -95,7 +104,7 @@ june_health_assess <- june_health_assess %>% rows_update(cleaning, by=c("timesta
 
 
 
-## ----cleaning_purdue_1-------------------------------------------------------------------------------
+## ----cleaning_purdue_1-----------------------------
 june_health_assess <- june_health_assess %>% mutate(
   purdue_severity_canker = recode(
     june_health_assess$purdue_severity_canker,
@@ -119,7 +128,7 @@ june_health_assess <- june_health_assess %>% mutate(
 )
 
 
-## ----------------------------------------------------------------------------------------------------
+## --------------------------------------------------
 # Select columns of interest for this correction
 cleaning <- june_health_assess %>% select(timestamp, plant_number, site_name, adult_or_seedling, signs_of_damage_seedling)
 
