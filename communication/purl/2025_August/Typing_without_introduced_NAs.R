@@ -1,4 +1,4 @@
-## ----------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------
 # Photo numbers
 after_health_assess <- after_health_assess %>% mutate(first_photo = as.integer(first_photo))
 after_health_assess <- after_health_assess %>% mutate(last_photo = as.integer(last_photo))
@@ -13,7 +13,7 @@ after_health_assess <- after_health_assess %>% mutate(shape_hairs = as.character
 after_health_assess <- after_health_assess %>% mutate(a_percent_live_canopy = as.integer(a_percent_live_canopy))
 
 
-## ----------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------
 # Canker
 after_health_assess <- after_health_assess %>% mutate(a_base_canker_area = as.integer(a_base_canker_area))
 after_health_assess <- after_health_assess %>% mutate(a_9_feet_canker_area = as.integer(a_9_feet_canker_area))
@@ -21,7 +21,7 @@ after_health_assess <- after_health_assess %>% mutate(a_trunk_canker_area = as.i
 after_health_assess <- after_health_assess %>% mutate(a_circum_girdled = as.integer(a_circum_girdled))
 
 
-## ----------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------
 # Densio
 after_health_assess <- after_health_assess %>% mutate(s_densio_north = as.integer(s_densio_north))
 after_health_assess <- after_health_assess %>% mutate(s_densio_east = as.integer(s_densio_east))

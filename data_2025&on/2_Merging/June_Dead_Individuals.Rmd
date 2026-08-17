@@ -1,0 +1,173 @@
+
+# June / July Dead Individuals
+We did not record dead/alive during June/July. 
+
+Here I search for dead/alive in the notes and this variable update accordingly.
+Further comfirmation will happen during photo review in QC. 
+
+## WCP - known dead
+- 38; "DEAD seedling - no   sign of canker. Appears to have been death by shade"
+- 2: "DEAD tree. Canopy class is based on structure, not live canopy. Callous is also based on whether cankers look like they have ever been calloused."
+- 50: "Stem is dead. Need to add a category for "seedling died" Unsure if 0 canker or 100% canker. Could have been killed by canker or the fungus is from after it died."
+- 3 (two entries one): We did this assessment based on dead adult tree. Epicormic health characterization will be entered as its own form.
+- 10: "Dead"
+
+```{r}
+# List of dead individuals 
+dead_WCP = c(38, 2, 50, 3, 10)
+
+# Isolate WCP dead individuals 
+cleaning <- june_health_assess %>% mutate(
+  a_dead_or_alive = case_when(
+    # If a WCP individual within the dead list AND an adult
+    (site_name == "WCP" & plant_number %in% dead_WCP & adult_or_seedling == "Adult") ~ "Dead",
+    # All other WCP (for June/July) adults are alive
+    (site_name == "WCP" & !(plant_number %in% dead_WCP) & adult_or_seedling == "Adult") ~ "Alive",
+    TRUE ~ a_dead_or_alive
+  ),
+
+  s_dead_or_alive = case_when(
+    # If a WCP individual within the dead list AND an seedling
+    (site_name == "WCP" & plant_number %in% dead_WCP & adult_or_seedling == "Seedling") ~ "Dead",
+    # All other WCP (for June/July) seedling are alive
+    (site_name == "WCP" & !(plant_number %in% dead_WCP) & adult_or_seedling == "Seedling") ~ "Alive",
+    TRUE ~ s_dead_or_alive
+  )
+)
+
+# Show before and after 
+# Demonstrating changes
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  adult_or_seedling = cleaning$adult_or_seedling,
+  og_adult_status  = june_health_assess$a_dead_or_alive,
+  clean_a = cleaning$a_dead_or_alive,
+  og_seedling_status = june_health_assess$s_dead_or_alive,
+  clean_s = cleaning$s_dead_or_alive
+)
+
+# Table of before and after for verification
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+june_health_assess <- june_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+
+```
+
+## ILM - known dead
+- 211: Dead; Dale estimated that the main trunk died 10 years ago. *Epicormic may be graft-able. 
+- 214: DEAD, in super dense shady cedar stand
+- 219: DEAD tree! - snag, broken in half. Last photo taken was not written down.
+- 245: DEAD!
+- 343: DEAD. lesion on base. 5.5mm base diameter
+- 344: DEAD, less grassy competition than nearby seedlings. 5.6mm base diameter
+- 345: 4.2mm basal diameter DEAD...
+- 346: DEAD, triple stem - all dead..
+- 347: 7.5mm basal diameter       DEAD
+- 348: This is a re-sprout from a stem that is dead (which was equally tall)
+- 354: DEAD...
+- 376: DEAD...
+- 378: DEAD...
+```{r}
+dead_ILM = c(211, 214, 219, 245, 343, 344, 345, 346, 347, 348, 354, 376, 378)
+
+cleaning <- june_health_assess %>% mutate(
+  # Adults
+  a_dead_or_alive = case_when(
+    # If a WCP individual within the dead list AND an adult 
+    (site_name == "ILM" & plant_number %in% dead_ILM & adult_or_seedling == "Adult") ~ "Dead",
+    # All other WCP (for June/July) adults are alive
+    (site_name == "ILM" &!(plant_number %in% dead_ILM) & adult_or_seedling == "Adult" ~ "Alive"),
+    TRUE ~ a_dead_or_alive
+  ),
+  
+  s_dead_or_alive = case_when(
+    # If a WCP individual within the dead list AND an seedling 
+    (site_name == "ILM" & plant_number %in% dead_ILM & adult_or_seedling == "Seedling") ~ "Dead",
+    # All other WCP (for June/July) seedling are alive
+    (site_name == "ILM" & !(plant_number %in% dead_ILM) & adult_or_seedling == "Seedling" ~ "Alive"),
+    TRUE ~ s_dead_or_alive
+  )
+)
+
+# Show before and after 
+# Demonstrating changes
+comparison <- tibble(
+  site_name = cleaning$site_name,
+  plant_number = cleaning$plant_number,
+  adult_or_seedling = cleaning$adult_or_seedling,
+  og_adult_status  = june_health_assess$a_dead_or_alive,
+  clean_a = cleaning$a_dead_or_alive,
+  og_seedling_status = june_health_assess$s_dead_or_alive,
+  clean_s = cleaning$s_dead_or_alive
+)
+
+# Table of before and after for verification
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+# Applying the changes
+june_health_assess <- june_health_assess %>% rows_update(cleaning, by=c("timestamp", "plant_number", "site_name"))
+
+```
+
+
+## All other individuals, assume alive
+```{r}
+
+# If not already assigned, assume alive.
+cleaning <- june_health_assess %>% mutate(
+  # Adults
+  a_dead_or_alive = case_when(
+    is.na(a_dead_or_alive) ~ "Alive",
+    TRUE ~ a_dead_or_alive
+  ),
+  
+  # Seedlings
+  s_dead_or_alive = case_when(
+    is.na(s_dead_or_alive) ~ "Alive",
+    TRUE ~ s_dead_or_alive
+  ),
+)
+
+
+# Show before and after 
+# Demonstrating changes
+comparison <- tibble(
+  site_name = june_health_assess$site_name,
+  plant_number = june_health_assess$plant_number,
+  adult_or_seedling = june_health_assess$adult_or_seedling,
+  a_dead_or_alive  = june_health_assess$a_dead_or_alive,
+  s_dead_or_alive = june_health_assess$s_dead_or_alive
+)
+
+# Table of before and after for verification
+datatable(
+  comparison,
+  options = list(
+    pageLength = 10,
+    scrollY = "400px",
+    scrollX = TRUE
+  ),
+  class = "stripe hover row-border order-column" # forces light theme
+)
+
+```
+
+# End

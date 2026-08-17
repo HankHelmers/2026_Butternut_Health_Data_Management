@@ -17,11 +17,10 @@ source(paste0(merging_path, "Create_missing_columns.R"))
 # Align types across all variables
 source(paste0(merging_path, "Aligning_variable_types.R"))
 
-
 # Rectifying differences in specific variables 
-
 ## June_Dead_Individuals 
-  ### Manually set
+  ### Manually set by reviewing photos and additional notes
+  source(paste0(merging_path, "June_Dead_Individuals.Rmd"))
 
 
 

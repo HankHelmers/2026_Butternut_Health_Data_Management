@@ -1,8 +1,8 @@
-## ----------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------
 after_health_assess <- after_health_assess %>% mutate(timestamp = mdy_hms(timestamp))
 
 
-## ----------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------
 cleaning <- after_health_assess %>%
   mutate(
     plant_number = sub("^0+", "", plant_number)
@@ -29,7 +29,7 @@ datatable(
 after_health_assess <- after_health_assess %>% rows_update(cleaning, by=c("timestamp", "site_name"))
 
 
-## ----------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------
 # Correct capitalization inconsistencies with CPVT and Sugar River
 after_health_assess <- after_health_assess %>%
   mutate(site_name = case_when(
@@ -39,7 +39,7 @@ after_health_assess <- after_health_assess %>%
   ))
 
 
-## ----------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------
 after_health_assess <- after_health_assess %>% mutate(plant_initials = case_when(
   site_name == "WCP" ~ "SH",
   site_name == "SR" ~ "SR",
