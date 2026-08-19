@@ -1,0 +1,14 @@
+
+# Seperate between adults and seedlings
+In June/July we collected both adults and seedlings under the same umbrella. Then in August 2025, we began collecting them seperately between adults and seedlings. For the following variables, we want to seperate the June/July data into seperate adult and seedlings variables. 
+
+## Percent live canopy 
+```{r}
+
+```
+
+## Visible callous 
+```{r}
+
+
+```
